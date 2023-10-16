@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../../../../../_img/logo.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.3.1">
     
     
       
@@ -1684,7 +1684,7 @@ development versions.</p>
 <p>This is what mike needs when publishing documentation for a particular version.</p>
 
             <details class="quote">
-              <summary>Source code in <code>src/frequenz/repo/config/mkdocs/mike.py</code></summary>
+              <summary>Source code in <code>frequenz/repo/config/mkdocs/mike.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-44">44</a></span>
 <span class="normal"><a href="#__codelineno-0-45">45</a></span>
 <span class="normal"><a href="#__codelineno-0-46">46</a></span>
@@ -1911,7 +1911,7 @@ determined for some other reason.</p>
   </table>
 
           <details class="quote">
-            <summary>Source code in <code>src/frequenz/repo/config/mkdocs/mike.py</code></summary>
+            <summary>Source code in <code>frequenz/repo/config/mkdocs/mike.py</code></summary>
             <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-61"> 61</a></span>
 <span class="normal"><a href="#__codelineno-0-62"> 62</a></span>
 <span class="normal"><a href="#__codelineno-0-63"> 63</a></span>
@@ -2029,8 +2029,8 @@ determined for some other reason.</p>
 </span><span id="__span-0-100"><a id="__codelineno-0-100" name="__codelineno-0-100"></a>            <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;-pre&quot;</span>
 </span><span id="__span-0-101"><a id="__codelineno-0-101" name="__codelineno-0-101"></a>        <span class="n">title</span> <span class="o">=</span> <span class="n">repo_info</span><span class="o">.</span><span class="n">ref_name</span>  <span class="c1"># vX.Y.Z</span>
 </span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a>        <span class="n">version</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">current_tag</span><span class="o">.</span><span class="n">major</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">current_tag</span><span class="o">.</span><span class="n">minor</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># vX.Y(-pre)?</span>
-</span><span id="__span-0-103"><a id="__codelineno-0-103" name="__codelineno-0-103"></a>        <span class="c1"># if repo_info.is_tag_last_minor_for_major():</span>
-</span><span id="__span-0-104"><a id="__codelineno-0-104" name="__codelineno-0-104"></a>        <span class="c1">#     aliases.append(f&quot;v{current_tag.major}{suffix}&quot;)  # vX(-pre)?</span>
+</span><span id="__span-0-103"><a id="__codelineno-0-103" name="__codelineno-0-103"></a>        <span class="k">if</span> <span class="n">repo_info</span><span class="o">.</span><span class="n">is_tag_last_minor_for_major</span><span class="p">():</span>
+</span><span id="__span-0-104"><a id="__codelineno-0-104" name="__codelineno-0-104"></a>            <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">current_tag</span><span class="o">.</span><span class="n">major</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># vX(-pre)?</span>
 </span><span id="__span-0-105"><a id="__codelineno-0-105" name="__codelineno-0-105"></a>        <span class="k">if</span> <span class="n">repo_info</span><span class="o">.</span><span class="n">is_tag_latest</span><span class="p">():</span>
 </span><span id="__span-0-106"><a id="__codelineno-0-106" name="__codelineno-0-106"></a>            <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;latest</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># latest(-pre)?</span>
 </span><span id="__span-0-107"><a id="__codelineno-0-107" name="__codelineno-0-107"></a>        <span class="k">return</span> <span class="n">MikeVersionInfo</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="n">aliases</span><span class="p">)</span>
@@ -2049,7 +2049,7 @@ determined for some other reason.</p>
 </span><span id="__span-0-120"><a id="__codelineno-0-120" name="__codelineno-0-120"></a>                    <span class="sa">f</span><span class="s2">&quot;Could not determine the next minor version for </span><span class="si">{</span><span class="n">current_branch</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span>
 </span><span id="__span-0-121"><a id="__codelineno-0-121" name="__codelineno-0-121"></a>                <span class="p">)</span>
 </span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a>            <span class="n">minor</span> <span class="o">=</span> <span class="n">next_minor</span>
-</span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a>            <span class="c1"># aliases.append(f&quot;v{current_branch.major}-dev&quot;)  # vX-dev</span>
+</span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a>            <span class="n">aliases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">current_branch</span><span class="o">.</span><span class="n">major</span><span class="si">}</span><span class="s2">-dev&quot;</span><span class="p">)</span>  <span class="c1"># vX-dev</span>
 </span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a>            <span class="n">minor</span> <span class="o">=</span> <span class="n">current_branch</span><span class="o">.</span><span class="n">minor</span>
 </span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a>
@@ -2168,7 +2168,7 @@ determined for some other reason.</p>
   </table>
 
           <details class="quote">
-            <summary>Source code in <code>src/frequenz/repo/config/mkdocs/mike.py</code></summary>
+            <summary>Source code in <code>frequenz/repo/config/mkdocs/mike.py</code></summary>
             <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-168">168</a></span>
 <span class="normal"><a href="#__codelineno-0-169">169</a></span>
 <span class="normal"><a href="#__codelineno-0-170">170</a></span>
@@ -2362,7 +2362,7 @@ determined for some other reason.</p>
   </table>
 
           <details class="quote">
-            <summary>Source code in <code>src/frequenz/repo/config/mkdocs/mike.py</code></summary>
+            <summary>Source code in <code>frequenz/repo/config/mkdocs/mike.py</code></summary>
             <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-210">210</a></span>
 <span class="normal"><a href="#__codelineno-0-211">211</a></span>
 <span class="normal"><a href="#__codelineno-0-212">212</a></span>
