@@ -4,13 +4,13 @@
 """This module defines macros for use in Markdown files."""
 
 import logging
-import os
-import subprocess
 from typing import Any
 
 import markdown as md
 from markdown.extensions import toc
 from mkdocs_macros import plugin as macros
+
+from frequenz.repo.config import github
 
 _logger = logging.getLogger(__name__)
 
@@ -38,75 +38,32 @@ def _slugify(text: str) -> str:
     return toc.slugify_unicode(text, "-")  # type: ignore[attr-defined,no-any-return]
 
 
-def _get_git_output(*args: str) -> str | None:
-    """Get the output of a git command.
-
-    Args:
-        *args: The arguments to pass to the git command.
-
-    Returns:
-        The output of the git command or `None` if the command didn't output anything
-            or failed.
-    """
-    try:
-        return subprocess.check_output(["git", *args]).decode("utf-8").strip() or None
-    except subprocess.CalledProcessError as exc:
-        _logger.warning("Failed to get git output for %s: %s", args, exc)
-        return None
-
-
-def _strip_v(version: str) -> str:
-    """Strip a leading `v` from a version string.
-
-    Args:
-        version: The version to strip the `v` from.
-
-    Returns:
-        The version without the leading `v`.
-    """
-    return version[1:] if version.startswith("v") else version
-
-
 def _add_version_variables(env: macros.MacrosPlugin) -> None:
     """Add variables with git information to the environment.
 
     Args:
         env: The environment to add the variables to.
     """
-    git_tag = _get_git_output("tag", "--points-at", "HEAD")
-    git_branch = _get_git_output("branch", "--show-current")
-    git_tag_last = _get_git_output("describe", "--abbrev=0", "--tags", "HEAD^")
-    git_ref_name = os.environ.get("GIT_REF_NAME", None) or git_tag or git_branch
-    pkg_version_last = None
-    pkg_version_next = None
-    if git_tag_last is not None:
-        pkg_version_last = _strip_v(git_tag_last)
-        try:
-            major_str, minor_str, _ = _strip_v(git_tag_last).split(".", maxsplit=2)
-        except ValueError as exc:
-            _logger.warning(
-                "Failed to parse major and minor version from %s: %s", git_tag_last, exc
-            )
-        else:
-            try:
-                last_major = int(major_str)
-                last_minor = int(minor_str)
-            except ValueError as exc:
-                _logger.warning(
-                    "Failed to parse last tag version from %s: %s", git_tag_last, exc
-                )
-            else:
-                if last_major == 0:
-                    pkg_version_next = f"{last_major}.{last_minor + 1}"
-                else:
-                    pkg_version_next = f"{last_major + 1}"
+    env.variables["version"] = None
+    env.variables["version_pkg_last_tag"] = None
+    env.variables["version_pkg_next_breaking"] = None
+    try:
+        version_info = github.get_repo_version_info()
+    except Exception as exc:  # pylint: disable=broad-except
+        _logger.warning("Failed to get version info: %s", exc)
+    else:
+        env.variables["version"] = version_info
 
-    env.variables["git_tag"] = git_tag
-    env.variables["git_branch"] = git_branch
-    env.variables["git_ref_name"] = git_ref_name
-    env.variables["git_tag_last"] = git_tag_last
-    env.variables["pkg_version_last"] = pkg_version_last
-    env.variables["pkg_version_next"] = pkg_version_next
+        last_tag = version_info.find_last_tag()
+        if last_tag:
+            env.variables["version_pkg_last_tag"] = str(last_tag)
+
+        next_breaking = version_info.find_next_breaking_branch()
+        if next_breaking:
+            next_breaking_name = f"{next_breaking.major}"
+            if next_breaking.minor:
+                next_breaking_name += f".{next_breaking.minor}"
+            env.variables["version_pkg_next_breaking"] = next_breaking_name
 
 
 def _hook_macros_plugin(env: macros.MacrosPlugin) -> None:
