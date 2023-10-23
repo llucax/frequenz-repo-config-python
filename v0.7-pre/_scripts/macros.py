@@ -45,25 +45,20 @@ def _add_version_variables(env: macros.MacrosPlugin) -> None:
         env: The environment to add the variables to.
     """
     env.variables["version"] = None
-    env.variables["version_pkg_last_tag"] = None
-    env.variables["version_pkg_next_breaking"] = None
+    env.variables["version_requirement"] = ""
     try:
         version_info = github.get_repo_version_info()
     except Exception as exc:  # pylint: disable=broad-except
         _logger.warning("Failed to get version info: %s", exc)
     else:
         env.variables["version"] = version_info
-
-        last_tag = version_info.find_last_tag()
-        if last_tag:
-            env.variables["version_pkg_last_tag"] = str(last_tag)
-
-        next_breaking = version_info.find_next_breaking_branch()
-        if next_breaking:
-            next_breaking_name = f"{next_breaking.major}"
-            if next_breaking.minor:
-                next_breaking_name += f".{next_breaking.minor}"
-            env.variables["version_pkg_next_breaking"] = next_breaking_name
+        if version_info.current_tag:
+            env.variables["version_requirement"] = f" == {version_info.current_tag}"
+        elif version_info.current_branch:
+            env.variables["version_requirement"] = (
+                " @ git+https://github.com/frequenz-floss/frequenz-repo-config-python"
+                f"@{version_info.current_branch}"
+            )
 
 
 def _hook_macros_plugin(env: macros.MacrosPlugin) -> None:
