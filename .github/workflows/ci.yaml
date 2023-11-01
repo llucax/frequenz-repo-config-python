@@ -248,15 +248,19 @@ jobs:
     steps:
       - name: Fetch sources
         uses: actions/checkout@v4
+
       - name: Download package
         uses: actions/download-artifact@v3
         with:
           name: dist-packages
           path: dist
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+
       - name: Set up docker-buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Test Installation
         uses: docker/build-push-action@v5
         with:
