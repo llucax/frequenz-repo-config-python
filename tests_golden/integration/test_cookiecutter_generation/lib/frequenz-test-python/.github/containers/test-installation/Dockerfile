@@ -3,7 +3,7 @@
 # This Dockerfile is used to test the installation of the python package in
 # multiple platforms in the CI. It is not used to build the package itself.
 
-FROM --platform=${TARGETPLATFORM} python:3.11-slim
+FROM --platform=${TARGETPLATFORM} python:${PYTHON_VERSION}-slim
 
 RUN python -m pip install --upgrade --no-cache-dir pip
 

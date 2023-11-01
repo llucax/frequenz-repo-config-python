@@ -264,27 +264,57 @@ jobs:
   test-installation:
     name: Test package installation in different architectures
     needs: ["build"]
+    strategy:
+      fail-fast: false
+      # Before adding new items to this matrix, make sure that a dockerfile
+      # exists for the combination of items in the matrix.
+      # Refer to .github/containers/nox-cross-arch/README.md to learn how to
+      # add and name new dockerfiles.
+      matrix:
+        python:
+          - "3.11"
+          - "3.12"
     runs-on: ubuntu-20.04
+
     steps:
       - name: Fetch sources
         uses: actions/checkout@v4
+
       - name: Download package
         uses: actions/download-artifact@v3
         with:
           name: dist-packages
           path: dist
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+
       - name: Set up docker-buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Test Installation
         uses: docker/build-push-action@v5
         with:
           context: .
+          build-args: |
+            PYTHON_VERSION=${{ matrix.python }}
           file: .github/containers/test-installation/Dockerfile
           platforms: linux/amd64,linux/arm64
           tags: localhost/test-installation
           push: false
+
+  # This job runs if all the `test-installation` matrix jobs ran and succeeded.
+  # It is only used to have a single job that we can require in branch
+  # protection rules, so we don't have to update the protection rules each time
+  # we add or remove a job from the matrix.
+  test-installation-all:
+    # The job name should match the name of the `test-installation` job.
+    name: Test package installation in different architectures
+    needs: ["test-installation"]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Return true
+        run: "true"
 
   test-docs:
     name: Test documentation website generation
