@@ -6,7 +6,7 @@
 
 ## Upgrading
 
-<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
+If upgrading `pylint` you might get a few new check errors.
 
 ### Cookiecutter template
 
@@ -14,7 +14,7 @@
 
 ## New Features
 
-<!-- Here goes the main new features and examples or instructions on how to use them -->
+- Add support for `pylint` 3.0.0 up to 4.0.0.
 
 ### Cookiecutter template
 
