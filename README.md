@@ -20,7 +20,7 @@ It offers:
 
 The following platforms are officially supported (tested):
 
-- **Python:** 3.11
+- **Python:** 3.11, 3.12
 - **Operating System:** Ubuntu Linux 20.04
 - **Architectures:** amd64, arm64
 
