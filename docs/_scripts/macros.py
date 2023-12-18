@@ -10,9 +10,9 @@ import markdown as md
 from markdown.extensions import toc
 from mkdocs_macros import plugin as macros
 
-from frequenz.repo.config import github
+from frequenz.repo.config import github, mkdocs
 
-_logger = logging.getLogger(__name__)
+_logger = mkdocs.get_logger() or logging.getLogger(__name__)
 
 _CODE_ANNOTATION_MARKER: str = (
     r'<span class="md-annotation">'
@@ -49,7 +49,7 @@ def _add_version_variables(env: macros.MacrosPlugin) -> None:
     try:
         version_info = github.get_repo_version_info()
     except Exception as exc:  # pylint: disable=broad-except
-        _logger.warning("Failed to get version info: %s", exc)
+        _logger.info("Failed to get version info: %s", exc)
     else:
         env.variables["version"] = version_info
         if version_info.current_tag:

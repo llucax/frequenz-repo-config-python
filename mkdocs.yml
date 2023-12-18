@@ -22,12 +22,13 @@ theme:
     repo: fontawesome/brands/github
   custom_dir: docs/_overrides
   features:
+    - content.action.edit
     - content.code.annotate
     - content.code.copy
     - navigation.expand
+    - navigation.footer
     - navigation.indexes
     - navigation.instant
-    - navigation.footer
     - navigation.tabs
     - navigation.top
     - navigation.tracking

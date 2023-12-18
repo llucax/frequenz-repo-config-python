@@ -10,7 +10,7 @@ repo_name: "{{cookiecutter.github_repo_name}}"
 repo_url: "https://github.com/{{cookiecutter.github_org}}/{{cookiecutter.github_repo_name}}"
 # TODO(cookiecutter): "main" is the GitHub repo default branch, you might want to update it
 # if the project uses a different default branch.
-edit_uri: "edit/main/docs/"
+edit_uri: "edit/v0.x.x/docs/"
 strict: true  # Treat warnings as errors
 
 # Build directories
@@ -25,11 +25,12 @@ theme:
     repo: fontawesome/brands/github
   custom_dir: docs/_overrides
   features:
+    - content.action.edit
     - content.code.annotate
     - content.code.copy
+    - navigation.footer
     - navigation.indexes
     - navigation.instant
-    - navigation.footer
     - navigation.tabs
     - navigation.top
     - navigation.tracking
