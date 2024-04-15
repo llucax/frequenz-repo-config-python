@@ -32,6 +32,12 @@
 
 <!-- Here new features for cookiecutter specifically -->
 
+## Enhancements
+
+### Cookiecutter template
+
+- The `Markdown` dependency was bumped so we don't need to add a `type: ignore` due to incorrect type hints.
+
 ## Bug Fixes
 
 <!-- Here goes notable bug fixes that are worth a special mention or explanation -->
