@@ -2,7 +2,7 @@
 
 ## Summary
 
-<!-- Here goes a general summary of what this release is about -->
+
 
 ## Upgrading
 
@@ -10,7 +10,19 @@
 
 ### Cookiecutter template
 
-<!-- Here upgrade steps for cookiecutter specifically -->
+- A new script for migrating to new templates (instead of regenerating all files) is provided. It can't handle the upgrade 100% automatically, but should make the migration process much easier and less error prone.
+
+  To run it, the simplest way is to fetch it from GitHub and run it directly:
+
+  ```console
+  curl -sSL https://raw.githubusercontent.com/frequenz-floss/frequenz-repo-config-python/v0.10.0/cookiecutter/migrate.sh | sh
+  ```
+
+  Make sure the version you want to migrate to is correct in the URL.
+
+  For jumping multiple versions you should run the script multiple times, once for each version.
+
+  And remember to follow any manual instructions for each run.
 
 ## New Features
 
