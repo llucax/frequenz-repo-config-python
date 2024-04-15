@@ -187,10 +187,11 @@ These are the steps to create a new release:
 
    ```sh
    cp .github/RELEASE_NOTES.template.md RELEASE_NOTES.md
+   cp .github/cookiecutter-migrate.template.sh cookiecutter/migrate.sh
    ```
 
-   Commit the new release notes and create a PR (this step should be automated
-   eventually too).
+   Commit the new release notes and migration script and create a PR (this step
+   should be automated eventually too).
 
 7. Celebrate!
 
