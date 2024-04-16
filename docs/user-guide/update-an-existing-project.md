@@ -1,6 +1,40 @@
+{% set ref_name = version.ref if version else 'HEAD' %}
 # Update an existing project
 
-To update an existing project, you can use the [Cookiecutter *replay
+To upgrade an existing project, there are two main approaches: use a migration
+script or re-run the [Cookiecutter] command.
+
+## Use a migration script
+
+This is the recommended approach, as it should be much less work. Only when
+extremely deep changes are made to the template, or when the project is very
+old, should you consider re-running the [Cookiecutter] command. Usually release
+notes will warn you about the former.
+
+The script can't always perform all the changes necessary to migrate to a new
+version. In this case, you will have to manually apply the changes. The script
+will guide you through the process, so please read the script output carefully.
+
+The script can also only migrate from one version to the next. If you are
+skipping versions, you will have to run the script multiple times.
+
+The easiest way to run the migration script is to fetch it from GitHub and run
+it directly.
+
+```sh
+curl -sSL https://raw.githubusercontent.com/frequenz-floss/frequenz-repo-config-python/{{ ref_name }}/cookiecutter/migrate.sh \
+	| sh
+```
+
+Make sure that the version (`{{ ref_name }}`) matches the
+target version you are migrating to.
+
+## Re-run the Cookiecutter command
+
+If you are upgrading a very old project (jumping multiple versions at the time)
+it is probably easier to just regenerate the whole project.
+
+To do so, you can use the [Cookiecutter *replay
 file*](https://cookiecutter.readthedocs.io/en/stable/advanced/replay.html) that
 was saved during the project generation. The file is saved as
 `.cookiecutter-replay.json`. Using this file, you can re-run [Cookiecutter]
