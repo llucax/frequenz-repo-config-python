@@ -33,5 +33,11 @@ echo
 manual_step "Please make sure that the 'Markdown' and 'types-Markdown' dependencies are at version 3.5.2 or higher in 'pyproject.toml':"
 grep 'Markdown' pyproject.toml
 
+echo "========================================================================"
+
+echo "Adding the new 'show_symbol_type_toc' option for MkDocs"
+sed -i '/^            show_source: true$/a \            show_symbol_type_toc: true' mkdocs.yml
+sed -i '/^  "mkdocstrings\[python\] == .*",$/a \  "mkdocstrings-python == 1.9.2",' pyproject.toml
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"

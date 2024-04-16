@@ -34,9 +34,12 @@
 
 ## Enhancements
 
+- The generated docs now show the symbol type in the table of contents.
+
 ### Cookiecutter template
 
 - The `Markdown` dependency was bumped so we don't need to add a `type: ignore` due to incorrect type hints.
+- The generated docs now show the symbol type in the table of contents.
 
 ## Bug Fixes
 
