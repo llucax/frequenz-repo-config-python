@@ -22,9 +22,16 @@ manual_step() {
   echo "\033[0;33m>>> $@\033[0m"
 }
 
-echo "TODO: Describe your migration step here."
-# Add your migration steps here.
-manual_step "Add any manual instructions for this step here."
+echo "Removing the 'Markdown' type:ignore from docs/_scripts/macros.py"
+sed -i \
+	-e 's|return toc.slugify_unicode(text, "-")  # type: ignore\[attr-defined,no-any-return\]|return toc.slugify_unicode(text, "-")|' \
+	-e '/# The type of the return value is not defined for the markdown library./d' \
+	-e '/# Also for some reason `mypy` thinks the `toc` module doesn'\''t have a/d' \
+	-e '/# `slugify_unicode` function, but it definitely does./d' \
+	docs/_scripts/macros.py
+echo
+manual_step "Please make sure that the 'Markdown' and 'types-Markdown' dependencies are at version 3.5.2 or higher in 'pyproject.toml':"
+grep 'Markdown' pyproject.toml
 
 # Add a separation line like this one after each migration step.
 echo "========================================================================"
