@@ -137,15 +137,15 @@ Import the following
 {% set ref_name = version.ref_name if version else default_branch %}
 
 * [Disable creation of non-release
-  tags]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disable.creation.of.non-release.tags.json)
+  tags]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disable creation of non-release tags.json)
 * [Disable creation of other
-  branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disable.creation.of.other.branches.json)
+  branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disable creation of other branches.json)
 * [Disallow removal and force-pushes of
-  gh-pages]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disallow.removal.and.force-pushes.of.gh-pages.json)
+  gh-pages]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disallow removal and force-pushes of gh-pages.json)
 * [Protect released
-  tags]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Protect.released.tags.json)
+  tags]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Protect released tags.json)
 * [Protect version
-  branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Protect.version.branches.json)
+  branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Protect version branches.json)
 
 ### Code security and analysis
 
