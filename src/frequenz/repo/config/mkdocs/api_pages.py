@@ -137,9 +137,10 @@ def generate_protobuf_api_pages(
             except subprocess.CalledProcessError as error:
                 print(f"Error generating protobuf reference page: {error}")
 
-            with doc_tmp_path.open() as input_file, mkdocs_gen_files.open(
-                full_doc_path, "w"
-            ) as output_file:
+            with (
+                doc_tmp_path.open() as input_file,
+                mkdocs_gen_files.open(full_doc_path, "w") as output_file,
+            ):
                 output_file.write(input_file.read())
 
             mkdocs_gen_files.set_edit_path(full_doc_path, Path("..") / path)
