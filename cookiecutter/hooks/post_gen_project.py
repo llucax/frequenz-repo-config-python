@@ -157,10 +157,19 @@ def clean_replay_file(
     # the generated project.
     replay_data["cookiecutter"].pop("_output_dir", None)
 
+    # Remove the _repo_dir key from the replay data because it is an absolute path that
+    # depends on the current environment and we don't want to add it as part of the
+    # generated project.
+    replay_data["cookiecutter"].pop("_repo_dir", None)
+
     # Remove the _extensions key from the replay data because it is not needed in the
     # generated project, we always want to use the ones from the repo-config template.
     # This should ease upgrading.
     replay_data["cookiecutter"].pop("_extensions", None)
+
+    # Remove the _checkout key from the replay data because it is not needed in the
+    # generated project.
+    replay_data["cookiecutter"].pop("_checkout", None)
 
     # Overwrite the Introduction (which contains just a long description of the
     # cookiecutter variables) with an empty string to reduce the replay file size and
