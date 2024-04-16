@@ -39,5 +39,15 @@ echo "Adding the new 'show_symbol_type_toc' option for MkDocs"
 sed -i '/^            show_source: true$/a \            show_symbol_type_toc: true' mkdocs.yml
 sed -i '/^  "mkdocstrings\[python\] == .*",$/a \  "mkdocstrings-python == 1.9.2",' pyproject.toml
 
+echo "========================================================================"
+
+manual_step "To configure merge queues via repository rulesets you need to:"
+manual_step "  1. Go to your repository settings and click on 'Rules' -> 'Rulesets' in the sidebar."
+manual_step "  2. Click on 'New ruleset' on the top right and select 'Import a ruleset'."
+manual_step "  3. Select the file 'github-rulesets/Queue PRs for v0.x.x.json'."
+manual_step "  4. Make sure the branch name is correct (matches the branch you want to configure the merge queue for) and click 'Create'."
+manual_step "  5. Go to the 'Branches' section in the sidebar."
+manual_step "  6. Remove any branch protection rules that are not needed anymore (you should probably have only one configuring the merge queue if you were using other rulesets before)."
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"
