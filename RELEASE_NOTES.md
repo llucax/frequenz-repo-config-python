@@ -30,7 +30,7 @@
 
 ### Cookiecutter template
 
-<!-- Here new features for cookiecutter specifically -->
+- Add the `mkdocs-includue-markdown-plugin`
 
 ## Enhancements
 

@@ -60,5 +60,11 @@ sed -i '/^- \*\*Architectures:\*\* amd64/a \
 > Newer Python versions and other operating systems and architectures might\
 > work too, but they are not automatically tested, so we cannot guarantee it.' README.md
 
+echo "========================================================================"
+
+echo "Adding 'mkdocs-includue-markdown-plugin' to the 'pyproject.toml' and 'mkdocs.yml' files"
+sed -i '/^        - docs\/_scripts\/mkdocstrings_autoapi\.py$/a \  - include-markdown' mkdocs.yml
+sed -i '/^  "mkdocs-gen-files == .*",$/a \  "mkdocs-include-markdown-plugin == 6.0.5",' pyproject.toml
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"
