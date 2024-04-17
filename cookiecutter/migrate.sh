@@ -16,7 +16,7 @@
 # for each version.
 #
 # And remember to follow any manual instructions for each run.
-set -eu
+set -u
 
 manual_step() {
   echo "\033[0;33m>>> $@\033[0m"
