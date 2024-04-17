@@ -18,6 +18,10 @@ The following platforms are officially supported (tested):
 - **Operating System:** Ubuntu Linux 20.04
 - **Architectures:** amd64, arm64
 
+> [!NOTE]
+> Newer Python versions and other operating systems and architectures might
+> work too, but they are not automatically tested, so we cannot guarantee it.
+
 ## Contributing
 
 If you want to know how to build this project and contribute to it, please

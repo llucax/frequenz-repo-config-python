@@ -49,5 +49,16 @@ manual_step "  4. Make sure the branch name is correct (matches the branch you w
 manual_step "  5. Go to the 'Branches' section in the sidebar."
 manual_step "  6. Remove any branch protection rules that are not needed anymore (you should probably have only one configuring the merge queue if you were using other rulesets before)."
 
+echo "========================================================================"
+
+echo "Adding a comment about the supported Python versions and architectures to the README.md file"
+# Add a multiline text to the README.md file
+
+sed -i '/^- \*\*Architectures:\*\* amd64/a \
+\
+> [!NOTE]\
+> Newer Python versions and other operating systems and architectures might\
+> work too, but they are not automatically tested, so we cannot guarantee it.' README.md
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"
