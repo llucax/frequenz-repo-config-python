@@ -66,5 +66,50 @@ echo "Adding 'mkdocs-includue-markdown-plugin' to the 'pyproject.toml' and 'mkdo
 sed -i '/^        - docs\/_scripts\/mkdocstrings_autoapi\.py$/a \  - include-markdown' mkdocs.yml
 sed -i '/^  "mkdocs-gen-files == .*",$/a \  "mkdocs-include-markdown-plugin == 6.0.5",' pyproject.toml
 
+echo "========================================================================"
+
+echo "Adding includable sections to the README.md file"
+sed -i -e '/^## Introduction$/a \
+\
+<!-- introduction -->' \
+  -e '/^## Supported Platforms$/i \
+<!-- /introduction -->\
+' \
+  -e '/^## Supported Platforms$/a \
+  \
+<!-- supported-platforms -->' \
+  -e '/^## Contributing$/i \
+<!-- /supported-platforms -->\
+' \
+  README.md
+if grep -q '^---8<-- "README.md"$' README.md
+then
+  echo "Including those sections in docs/index.md instead of the whole README.md file"
+  replacement="$(cat <<EOT
+$(head -n1 README.md) \\
+\\
+## Introduction\\
+\\
+{%\\
+   include-markdown "../README.md"\\
+   start="<!-- introduction -->"\\
+   end="<!-- /introduction -->"\\
+%}\\
+\\
+## Supported Platforms\\
+\\
+{%\\
+   include-markdown "../README.md"\\
+   start="<!-- supported-platforms -->"\\
+   end="<!-- /supported-platforms -->"\\
+%}
+EOT
+  )"
+  sed -i 's|^---8<-- "README.md"$|'"$replacement"'|' docs/index.md
+else
+  manual_step "Please include the sections 'Introduction' and 'Supported Platforms' from the README.md file in the docs/index.md file."
+  echo "    We couldn't find the expected marker in the README.md file to do the update automatically."
+fi
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"

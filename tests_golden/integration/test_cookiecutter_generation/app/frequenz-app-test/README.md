@@ -6,11 +6,17 @@
 
 ## Introduction
 
+<!-- introduction -->
+
 Test description
+
+<!-- /introduction -->
 
 TODO(cookiecutter): Improve the README file
 
 ## Supported Platforms
+
+<!-- supported-platforms -->
 
 The following platforms are officially supported (tested):
 
@@ -21,6 +27,8 @@ The following platforms are officially supported (tested):
 > [!NOTE]
 > Newer Python versions and other operating systems and architectures might
 > work too, but they are not automatically tested, so we cannot guarantee it.
+
+<!-- /supported-platforms -->
 
 ## Contributing
 
