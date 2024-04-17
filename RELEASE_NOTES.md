@@ -26,7 +26,7 @@
 
 ## New Features
 
-<!-- Here goes the main new features and examples or instructions on how to use them -->
+- A new GitHub ruleset is provided to configure the merge queue, so branch protection rules are not needed anymore.
 
 ### Cookiecutter template
 

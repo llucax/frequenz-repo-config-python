@@ -74,52 +74,6 @@ This depends on the repo, but in general we want this:
 * Give the team owning the repository *Role: Admin*
 * Give *everybody* team *Role: Triage*
 
-### Branches
-
-After importing code to the repository, add the following *Branch protection
-rules* (as always this is a guideline, defaults that should be used unless
-there is a reason to diverge):
-
-#### Protect matching branches
-
-!!! Note inline end
-
-    This is only to enable the merge queue, all the real protection rules will
-    be added afterwards via [rulesets](#rulesets). This is why all other
-    protections are disabled here.
-
-Add a rule for the **main branch** (`v0.x.x`) without wildcards so merge queues
-can be enabled:
-
-- [ ] Require a pull request before merging
-    - [ ] Require approvals: 1
-    - [ ] Dismiss stale pull request approvals when new commits are pushed
-    - [ ] Require review from Code Owners
-    - [ ] Restrict who can dismiss pull request reviews
-    - [ ] Allow specified actors to bypass required pull requests
-    - [ ] Require approval of the most recent reviewable push
-- [ ] Require status checks to pass before merging
-    - [ ] Require branches to be up to date before merging
-    - **(add all the tests that should pass)**
-- [ ] Require conversation resolution before merging
-- [ ] Require signed commits
-- [ ] Require linear history
-- [x] Require merge queue:
-    * Maximum pull requests to build: **5**
-    * Minimum pull requests to merge: **2** (this should be the only change
-      to defaults) or after **5** minutes
-    * Maximum pull requests to merge: **5**
-    - [x] Only merge non-failing pull requests
-    * Consider check failed after **60**
-- [ ] Require deployments to succeed before merging
-- [ ] Lock branch
-- [ ] Do not allow bypassing the above settings
-- [ ] Restrict who can push to matching branches (this might be disabled
-  while pushing the initial changes)
-- Rules applied to everyone including administrators
-    - [ ] Allow force pushes
-    - [ ] Allow deletions
-
 ### Rules
 
 #### Rulesets
@@ -137,15 +91,17 @@ Import the following
 {% set ref_name = version.ref_name if version else default_branch %}
 
 * [Disable creation of non-release
-  tags]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disable.creation.of.non-release.tags.json)
+  tags]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disable creation of non-release tags.json)
 * [Disable creation of other
-  branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disable.creation.of.other.branches.json)
+  branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disable creation of other branches.json)
 * [Disallow removal and force-pushes of
-  gh-pages]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disallow.removal.and.force-pushes.of.gh-pages.json)
+  gh-pages]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disallow removal and force-pushes of gh-pages.json)
 * [Protect released
-  tags]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Protect.released.tags.json)
+  tags]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Protect released tags.json)
 * [Protect version
-  branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Protect.version.branches.json)
+  branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Protect version branches.json)
+* [Queue PRs for
+  v0.x.x]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Queue PRs for v0.x.x.json)
 
 ### Code security and analysis
 
