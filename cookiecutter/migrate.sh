@@ -49,5 +49,10 @@ manual_step "  4. Make sure the branch name is correct (matches the branch you w
 manual_step "  5. Go to the 'Branches' section in the sidebar."
 manual_step "  6. Remove any branch protection rules that are not needed anymore (you should probably have only one configuring the merge queue if you were using other rulesets before)."
 
+echo "========================================================================"
+
+echo "Fixing pip cache in '.github/workflows/ci.yaml'"
+sed -i "|hashFiles('**/pyproject.toml')|hashFiles('pyproject.toml')|" .github/workflows/ci.yaml
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"

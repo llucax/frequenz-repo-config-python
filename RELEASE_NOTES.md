@@ -48,4 +48,4 @@
 
 ### Cookiecutter template
 
-<!-- Here bug fixes for cookiecutter specifically -->
+- Fixed a bug where the pip cache post action fails in the CI workflow because of permissions issues.
