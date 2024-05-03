@@ -56,14 +56,25 @@ sed -i "|hashFiles('**/pyproject.toml')|hashFiles('pyproject.toml')|" .github/wo
 
 echo "========================================================================"
 
-echo "Fixing nox-cross-arch-all jobs to fail on child jobs failure in '.github/workflows/ci.yaml'"
-sed -i '/^    needs: \["nox-cross-arch"\]$/,/^        run: "true"$/c\
+echo "Fixing nox-(cross-arch-)all jobs to fail on child jobs failure in '.github/workflows/ci.yaml'"
+sed -i \
+  -e '/^    needs: \["nox-cross-arch"\]$/,/^        run: "true"$/c\
     needs: \["nox-cross-arch"\]\
     # We skip this job only if nox-cross-arch was also skipped\
     if: always() && needs.nox-cross-arch.result != '"'"'skipped'"'"'\
     runs-on: ubuntu-20.04\
     env:\
       DEPS_RESULT: ${{ needs.nox-cross-arch.result }}\
+    steps:\
+      - name: Check matrix job result\
+        run: test "$DEPS_RESULT" = "success"' \
+  -e '/^    needs: \["nox"\]$/,/^        run: "true"$/c\
+    needs: ["nox"]\
+    # We skip this job only if nox was also skipped\
+    if: always() && needs.nox.result != '"'"'skipped'"'"'\
+    runs-on: ubuntu-20.04\
+    env:\
+      DEPS_RESULT: ${{ needs.nox.result }}\
     steps:\
       - name: Check matrix job result\
         run: test "$DEPS_RESULT" = "success"' \
