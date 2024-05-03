@@ -54,5 +54,23 @@ echo "========================================================================"
 echo "Fixing pip cache in '.github/workflows/ci.yaml'"
 sed -i "|hashFiles('**/pyproject.toml')|hashFiles('pyproject.toml')|" .github/workflows/ci.yaml
 
+echo "========================================================================"
+
+echo "Fixing nox-cross-arch-all jobs to fail on child jobs failure in '.github/workflows/ci.yaml'"
+sed -i '/^    needs: \["nox-cross-arch"\]$/,/^        run: "true"$/c\
+    needs: \["nox-cross-arch"\]\
+    # We only run if there are failures, to propagate the failure, so if this\
+    # check is required, it will fail if the child matrix jobs failed.\
+    # If the child matrix jobs didn'"'"'t run, this job will be skipped\
+    # because there will be no dependency with a failure result.\
+    if: always() && contains(needs.*.result, '"'"'failure'"'"')\
+    runs-on: ubuntu-20.04\
+    steps:\
+      - name: Fail because some cross-arch tests failed\
+        run: |\
+          echo "Error: Some cross-arch tests failed"\
+          exit 1' \
+  .github/workflows/ci.yaml
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"

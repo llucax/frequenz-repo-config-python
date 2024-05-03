@@ -49,3 +49,4 @@
 ### Cookiecutter template
 
 - Fixed a bug where the pip cache post action fails in the CI workflow because of permissions issues.
+- Make the `nox-cross-arch-all` job fail if any `nox-cross-arch` matrix job fails.
