@@ -6,7 +6,7 @@
 # For more details on the configuration please see:
 # https://github.com/marketplace/actions/labeler
 
-"part:doc":
+"part:docs":
   - all:
     - changed-files:
       - any-glob-to-any-file:
