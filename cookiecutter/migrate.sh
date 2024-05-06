@@ -56,20 +56,28 @@ sed -i "|hashFiles('**/pyproject.toml')|hashFiles('pyproject.toml')|" .github/wo
 
 echo "========================================================================"
 
-echo "Fixing nox-cross-arch-all jobs to fail on child jobs failure in '.github/workflows/ci.yaml'"
-sed -i '/^    needs: \["nox-cross-arch"\]$/,/^        run: "true"$/c\
+echo "Fixing nox-(cross-arch-)all jobs to fail on child jobs failure in '.github/workflows/ci.yaml'"
+sed -i \
+  -e '/^    needs: \["nox-cross-arch"\]$/,/^        run: "true"$/c\
     needs: \["nox-cross-arch"\]\
-    # We only run if there are failures, to propagate the failure, so if this\
-    # check is required, it will fail if the child matrix jobs failed.\
-    # If the child matrix jobs didn'"'"'t run, this job will be skipped\
-    # because there will be no dependency with a failure result.\
-    if: always() && contains(needs.*.result, '"'"'failure'"'"')\
+    # We skip this job only if nox-cross-arch was also skipped\
+    if: always() && needs.nox-cross-arch.result != '"'"'skipped'"'"'\
     runs-on: ubuntu-20.04\
+    env:\
+      DEPS_RESULT: ${{ needs.nox-cross-arch.result }}\
     steps:\
-      - name: Fail because some cross-arch tests failed\
-        run: |\
-          echo "Error: Some cross-arch tests failed"\
-          exit 1' \
+      - name: Check matrix job result\
+        run: test "$DEPS_RESULT" = "success"' \
+  -e '/^    needs: \["nox"\]$/,/^        run: "true"$/c\
+    needs: ["nox"]\
+    # We skip this job only if nox was also skipped\
+    if: always() && needs.nox.result != '"'"'skipped'"'"'\
+    runs-on: ubuntu-20.04\
+    env:\
+      DEPS_RESULT: ${{ needs.nox.result }}\
+    steps:\
+      - name: Check matrix job result\
+        run: test "$DEPS_RESULT" = "success"' \
   .github/workflows/ci.yaml
 
 # Add a separation line like this one after each migration step.
