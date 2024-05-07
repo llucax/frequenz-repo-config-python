@@ -146,8 +146,10 @@ class _CustomPythonCodeBlockParser(CodeBlockParser):
         example_code = textwrap.dedent(
             example.document.text[example.start : example.end]
         )
-        # Remove first line (the line with the triple backticks)
-        example_code = example_code[example_code.find("\n") + 1 :]
+        # Remove code fences (first/last line)
+        example_code = example_code[
+            example_code.find("\n") + 1 : example_code.rfind("\n")
+        ]
 
         example_with_imports = _FORMAT_STRING.format(
             disable_pylint=_PYLINT_DISABLE_COMMENT.format("disable"),

@@ -44,7 +44,7 @@
 
 ## Bug Fixes
 
-<!-- Here goes notable bug fixes that are worth a special mention or explanation -->
+- The code example extractor relied on a bug in the upstream sybil project that was recently fixed, thus our code also needed to be fixed.
 
 ### Cookiecutter template
 
