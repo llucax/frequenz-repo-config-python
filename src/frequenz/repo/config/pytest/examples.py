@@ -31,7 +31,7 @@ from typing import Any
 
 from sybil import Example
 from sybil.evaluators.python import pad
-from sybil.parsers.myst import CodeBlockParser, PythonCodeBlockParser
+from sybil.parsers.markdown import CodeBlockParser, PythonCodeBlockParser
 from sybil.typing import Evaluator
 
 _PYLINT_DISABLE_COMMENT = (
