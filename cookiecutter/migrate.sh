@@ -52,7 +52,7 @@ manual_step "  6. Remove any branch protection rules that are not needed anymore
 echo "========================================================================"
 
 echo "Fixing pip cache in '.github/workflows/ci.yaml'"
-sed -i "|hashFiles('**/pyproject.toml')|hashFiles('pyproject.toml')|" .github/workflows/ci.yaml
+sed -i "s|hashFiles('\*\*/pyproject.toml')|hashFiles('pyproject.toml')|" .github/workflows/ci.yaml
 
 echo "========================================================================"
 
