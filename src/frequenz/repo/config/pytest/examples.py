@@ -25,7 +25,6 @@ pytest_collect_file = Sybil(**examples.get_sybil_arguments()).pytest()
 import ast
 import os
 import subprocess
-import textwrap
 from pathlib import Path
 from typing import Any
 
@@ -140,22 +139,11 @@ class _CustomPythonCodeBlockParser(CodeBlockParser):
         )
         imports_code = "\n".join(import_header)
 
-        # Dedent the code example
-        # There is also example.parsed that is already prepared, but it has
-        # empty lines stripped and thus fucks up the line numbers.
-        example_code = textwrap.dedent(
-            example.document.text[example.start : example.end]
-        )
-        # Remove code fences (first/last line)
-        example_code = example_code[
-            example_code.find("\n") + 1 : example_code.rfind("\n")
-        ]
-
         example_with_imports = _FORMAT_STRING.format(
             disable_pylint=_PYLINT_DISABLE_COMMENT.format("disable"),
             imports=imports_code,
             enable_pylint=_PYLINT_DISABLE_COMMENT.format("enable"),
-            code=example_code,
+            code=example.parsed,
         )
 
         # Make sure the line numbers are correct
