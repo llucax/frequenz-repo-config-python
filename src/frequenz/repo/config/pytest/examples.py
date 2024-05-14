@@ -25,13 +25,13 @@ pytest_collect_file = Sybil(**examples.get_sybil_arguments()).pytest()
 import ast
 import os
 import subprocess
-import textwrap
 from pathlib import Path
 from typing import Any
 
 from sybil import Example
 from sybil.evaluators.python import pad
-from sybil.parsers.myst import CodeBlockParser
+from sybil.parsers.markdown import CodeBlockParser, PythonCodeBlockParser
+from sybil.typing import Evaluator
 
 _PYLINT_DISABLE_COMMENT = (
     "# pylint: {}=unused-import,wildcard-import,unused-wildcard-import"
@@ -44,22 +44,6 @@ _FORMAT_STRING = """
 {enable_pylint}
 
 {code}"""
-
-
-def get_sybil_arguments() -> dict[str, Any]:
-    """Get the arguments to pass when instantiating the Sybil object to lint docs examples.
-
-    Returns:
-        The arguments to pass when instantiating the Sybil object.
-    """
-    return {
-        "parsers": [_CustomPythonCodeBlockParser()],
-        "patterns": ["*.py"],
-        # This is a hack because Sybil seems to have issues with `__init__.py` files.
-        # See https://github.com/frequenz-floss/frequenz-repo-config-python/issues/113
-        # for details
-        "excludes": ["__init__.py"],
-    }
 
 
 def _get_import_statements(code: str) -> list[str]:
@@ -134,9 +118,9 @@ class _CustomPythonCodeBlockParser(CodeBlockParser):
     Pylint warnings which are unimportant for code examples are disabled.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, language: str | None = None, _: Evaluator | None = None) -> None:
         """Initialize the parser."""
-        super().__init__("python")
+        super().__init__(language, self.evaluate)
 
     def evaluate(self, example: Example) -> None | str:
         """Validate the extracted code example using pylint.
@@ -155,20 +139,11 @@ class _CustomPythonCodeBlockParser(CodeBlockParser):
         )
         imports_code = "\n".join(import_header)
 
-        # Dedent the code example
-        # There is also example.parsed that is already prepared, but it has
-        # empty lines stripped and thus fucks up the line numbers.
-        example_code = textwrap.dedent(
-            example.document.text[example.start : example.end]
-        )
-        # Remove first line (the line with the triple backticks)
-        example_code = example_code[example_code.find("\n") + 1 :]
-
         example_with_imports = _FORMAT_STRING.format(
             disable_pylint=_PYLINT_DISABLE_COMMENT.format("disable"),
             imports=imports_code,
             enable_pylint=_PYLINT_DISABLE_COMMENT.format("enable"),
-            code=example_code,
+            code=example.parsed,
         )
 
         # Make sure the line numbers are correct
@@ -234,3 +209,27 @@ def _validate_with_pylint(
         return output.splitlines()
 
     return []
+
+
+class MyPythonCodeBlockParser(PythonCodeBlockParser):
+    """Custom Python code block parser that uses the custom code block parser."""
+
+    codeblock_parser_class: type[_CustomPythonCodeBlockParser] = (
+        _CustomPythonCodeBlockParser
+    )
+
+
+def get_sybil_arguments() -> dict[str, Any]:
+    """Get the arguments to pass when instantiating the Sybil object to lint docs examples.
+
+    Returns:
+        The arguments to pass when instantiating the Sybil object.
+    """
+    return {
+        "parsers": [MyPythonCodeBlockParser()],
+        "patterns": ["*.py"],
+        # This is a hack because Sybil seems to have issues with `__init__.py` files.
+        # See https://github.com/frequenz-floss/frequenz-repo-config-python/issues/113
+        # for details
+        "excludes": ["__init__.py"],
+    }
