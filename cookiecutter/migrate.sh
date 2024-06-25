@@ -80,5 +80,14 @@ sed -i \
         run: test "$DEPS_RESULT" = "success"' \
   .github/workflows/ci.yaml
 
+echo "========================================================================"
+
+echo "Disabling some pylint checks also checked by other tools"
+sed -i -e '/  "unsubscriptable-object",/a \  # Checked by mypy\
+  "no-member",' \
+  -e '/  # Checked by flake8/a \  "f-string-without-interpolation",' \
+  -e '/  "line-too-long",/a \  "missing-function-docstring",' \
+  pyproject.toml
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"
