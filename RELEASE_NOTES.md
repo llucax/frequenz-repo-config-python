@@ -42,6 +42,7 @@
 - The generated docs now show the symbol type in the table of contents.
 - The dependecies were updated to the latest versions.
 - Disabled some `pylint` checks that are already checked by other tools.
+- The generated documentation now uses symlinks for aliases, which allows deep linking when using aliases too.
 
 ## Bug Fixes
 
