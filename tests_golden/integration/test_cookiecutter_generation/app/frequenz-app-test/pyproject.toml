@@ -138,8 +138,12 @@ disable = [
   # pylint's unsubscriptable check is buggy and is not needed because
   # it is a type-check, for which we already have mypy.
   "unsubscriptable-object",
+  # Checked by mypy
+  "no-member",
   # Checked by flake8
+  "f-string-without-interpolation",
   "line-too-long",
+  "missing-function-docstring",
   "redefined-outer-name",
   "unnecessary-lambda-assignment",
   "unused-import",
