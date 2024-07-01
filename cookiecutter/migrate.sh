@@ -89,5 +89,10 @@ sed -i -e '/  "unsubscriptable-object",/a \  # Checked by mypy\
   -e '/  "line-too-long",/a \  "missing-function-docstring",' \
   pyproject.toml
 
+echo "========================================================================"
+
+echo "Using symlink aliases in 'mkdocs.yml'"
+sed -i "s|alias_type: redirect|alias_type: symlink|" mkdocs.yml
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"
