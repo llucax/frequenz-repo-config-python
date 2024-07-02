@@ -302,13 +302,17 @@ jobs:
     if: github.event_name != 'push'
     runs-on: ubuntu-20.04
     steps:
+      - name: Setup Git
+        uses: frequenz-floss/gh-action-setup-git@v0.x.x
+        # TODO(cookiecutter): Uncomment this for projects with private dependencies
+        # with:
+        #   username: ${{ secrets.GIT_USER }}
+        #   password: ${{ secrets.GIT_PASS }}
+
       - name: Fetch sources
         uses: actions/checkout@v4
         with:
           submodules: true
-
-      - name: Setup Git user and e-mail
-        uses: frequenz-floss/setup-git-user@v2
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -346,13 +350,17 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Setup Git
+        uses: frequenz-floss/gh-action-setup-git@v0.x.x
+        # TODO(cookiecutter): Uncomment this for projects with private dependencies
+        # with:
+        #   username: ${{ secrets.GIT_USER }}
+        #   password: ${{ secrets.GIT_PASS }}
+
       - name: Fetch sources
         uses: actions/checkout@v4
         with:
           submodules: true
-
-      - name: Setup Git user and e-mail
-        uses: frequenz-floss/setup-git-user@v2
 
       - name: Set up Python
         uses: actions/setup-python@v4
