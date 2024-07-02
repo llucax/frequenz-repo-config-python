@@ -52,3 +52,5 @@
 
 - Fixed a bug where the pip cache post action fails in the CI workflow because of permissions issues.
 - Make the `nox-cross-arch-all` job fail if any `nox-cross-arch` matrix job fails.
+- Fix credentials not being passed to the `test-installation` job in the CI workflow.
+- Make sure credentials are configured for all jobs that check out the repository in the CI workflow.
