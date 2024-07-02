@@ -31,6 +31,13 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Setup Git
+        uses: frequenz-floss/gh-action-setup-git@v0.x.x
+        # TODO(cookiecutter): Uncomment this for projects with private dependencies
+        # with:
+        #   username: ${{ secrets.GIT_USER }}
+        #   password: ${{ secrets.GIT_PASS }}
+
       - name: Fetch sources
         uses: actions/checkout@v3
         with:
@@ -67,6 +74,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Setup Git
+        uses: frequenz-floss/gh-action-setup-git@v0.x.x
+        # TODO(cookiecutter): Uncomment this for projects with private dependencies
+        # with:
+        #   username: ${{ secrets.GIT_USER }}
+        #   password: ${{ secrets.GIT_PASS }}
+
       - name: Print environment (debug)
         run: env
 
@@ -145,6 +159,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Setup Git
+        uses: frequenz-floss/gh-action-setup-git@v0.x.x
+        # TODO(cookiecutter): Uncomment this for projects with private dependencies
+        # with:
+        #   username: ${{ secrets.GIT_USER }}
+        #   password: ${{ secrets.GIT_PASS }}
+
       - name: Fetch sources
         uses: actions/checkout@v4
         with:
@@ -245,6 +266,13 @@ jobs:
     name: Build distribution packages
     runs-on: ubuntu-20.04
     steps:
+      - name: Setup Git
+        uses: frequenz-floss/gh-action-setup-git@v0.x.x
+        # TODO(cookiecutter): Uncomment this for projects with private dependencies
+        # with:
+        #   username: ${{ secrets.GIT_USER }}
+        #   password: ${{ secrets.GIT_PASS }}
+
       - name: Fetch sources
         uses: actions/checkout@v4
         with:
@@ -277,6 +305,12 @@ jobs:
     needs: ["build"]
     runs-on: ubuntu-20.04
     steps:
+      - name: Setup Git
+        uses: frequenz-floss/gh-action-setup-git@v0.x.x
+        # TODO(cookiecutter): Uncomment this for projects with private dependencies
+        # with:
+        #   username: ${{ secrets.GIT_USER }}
+        #   password: ${{ secrets.GIT_PASS }}
       - name: Fetch sources
         uses: actions/checkout@v4
       - name: Download package

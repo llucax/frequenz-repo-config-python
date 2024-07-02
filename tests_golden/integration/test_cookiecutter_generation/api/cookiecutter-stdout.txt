@@ -4,6 +4,11 @@
 ./.github/labeler.yml:# TODO(cookiecutter): Add different parts of the source
 ./.github/workflows/ci.yaml:        # TODO(cookiecutter): Uncomment this for projects with private dependencies
 ./.github/workflows/ci.yaml:        # TODO(cookiecutter): Uncomment this for projects with private dependencies
+./.github/workflows/ci.yaml:        # TODO(cookiecutter): Uncomment this for projects with private dependencies
+./.github/workflows/ci.yaml:        # TODO(cookiecutter): Uncomment this for projects with private dependencies
+./.github/workflows/ci.yaml:        # TODO(cookiecutter): Uncomment this for projects with private dependencies
+./.github/workflows/ci.yaml:        # TODO(cookiecutter): Uncomment this for projects with private dependencies
+./.github/workflows/ci.yaml:        # TODO(cookiecutter): Uncomment this for projects with private dependencies
 ./.github/workflows/release-notes-check.yml:          # TODO(cookiecutter): Uncomment the following line for private repositories, otherwise remove it and remove it
 ./CODEOWNERS:# TODO(cookiecutter): Add more specific code-owners, check if the default is correct
 ./README.md:TODO(cookiecutter): Improve the README file
