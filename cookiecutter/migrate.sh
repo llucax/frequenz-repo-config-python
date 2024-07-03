@@ -94,5 +94,152 @@ echo "========================================================================"
 echo "Using symlink aliases in 'mkdocs.yml'"
 sed -i "s|alias_type: redirect|alias_type: symlink|" mkdocs.yml
 
+echo "========================================================================"
+
+echo "Fixing credentials not being properly passed in '.github/workflows/ci.yaml'"
+patch --merge -p1 <<'EOF'
+diff --git a/.github/containers/test-installation/Dockerfile b/.github/containers/test-installation/Dockerfile
+index 2494545..ac3de24 100644
+--- a/.github/containers/test-installation/Dockerfile
++++ b/.github/containers/test-installation/Dockerfile
+@@ -14,5 +14,8 @@ RUN apt-get update -y && \
+     python -m pip install --upgrade --no-cache-dir pip
+ 
+ COPY dist dist
+-RUN pip install dist/*.whl && \
+-    rm -rf dist
++# This git-credentials file is made available by the GitHub ci.yaml workflow
++COPY git-credentials /root/.git-credentials
++RUN git config --global credential.helper store && \
++    pip install dist/*.whl && \
++    rm -rf dist /root/.git-credentials
+diff --git a/.github/workflows/ci.yaml b/.github/workflows/ci.yaml
+index 8062a61..67000f1 100644
+--- a/.github/workflows/ci.yaml
++++ b/.github/workflows/ci.yaml
+@@ -41,6 +41,13 @@ jobs:
+     runs-on: ${{ matrix.os }}
+ 
+     steps:
++      - name: Setup Git
++        uses: frequenz-floss/gh-action-setup-git@v0.x.x
++        # TODO(cookiecutter): Uncomment this for projects with private dependencies
++        # with:
++        #   username: ${{ secrets.GIT_USER }}
++        #   password: ${{ secrets.GIT_PASS }}
++
+       - name: Print environment (debug)
+         run: env
+ 
+@@ -119,6 +126,13 @@ jobs:
+     runs-on: ${{ matrix.os }}
+ 
+     steps:
++      - name: Setup Git
++        uses: frequenz-floss/gh-action-setup-git@v0.x.x
++        # TODO(cookiecutter): Uncomment this for projects with private dependencies
++        # with:
++        #   username: ${{ secrets.GIT_USER }}
++        #   password: ${{ secrets.GIT_PASS }}
++
+       - name: Fetch sources
+         uses: actions/checkout@v4
+ 
+@@ -220,6 +234,13 @@ jobs:
+     name: Build distribution packages
+     runs-on: ubuntu-20.04
+     steps:
++      - name: Setup Git
++        uses: frequenz-floss/gh-action-setup-git@v0.x.x
++        # TODO(cookiecutter): Uncomment this for projects with private dependencies
++        # with:
++        #   username: ${{ secrets.GIT_USER }}
++        #   password: ${{ secrets.GIT_PASS }}
++
+       - name: Fetch sources
+         uses: actions/checkout@v4
+         with:
+@@ -252,17 +273,31 @@ jobs:
+     needs: ["build"]
+     runs-on: ubuntu-20.04
+     steps:
++      - name: Setup Git
++        uses: frequenz-floss/gh-action-setup-git@v0.x.x
++        # TODO(cookiecutter): Uncomment this for projects with private dependencies
++        # with:
++        #   username: ${{ secrets.GIT_USER }}
++        #   password: ${{ secrets.GIT_PASS }}
++
+       - name: Fetch sources
+         uses: actions/checkout@v4
++
+       - name: Download package
+         uses: actions/download-artifact@v4
+         with:
+           name: dist-packages
+           path: dist
++
++      - name: Make Git credentials available to docker
+        run: |
+          touch ~/.git-credentials  # Ensure the file exists
++         cp ~/.git-credentials git-credentials || true
++
+       - name: Set up QEMU
+         uses: docker/setup-qemu-action@v3
++
+       - name: Set up docker-buildx
+         uses: docker/setup-buildx-action@v3
++
+       - name: Test Installation
+         uses: docker/build-push-action@v6
+         with:
+@@ -277,14 +312,18 @@ jobs:
+     if: github.event_name != 'push'
+     runs-on: ubuntu-20.04
+     steps:
++      - name: Setup Git
++        uses: frequenz-floss/gh-action-setup-git@v0.x.x
++        # TODO(cookiecutter): Uncomment this for projects with private dependencies
++        # with:
++        #   username: ${{ secrets.GIT_USER }}
++        #   password: ${{ secrets.GIT_PASS }}
++
+       - name: Fetch sources
+         uses: actions/checkout@v4
+         with:
+           submodules: true
+ 
+-      - name: Setup Git user and e-mail
+-        uses: frequenz-floss/setup-git-user@v2
+-
+       - name: Set up Python
+         uses: actions/setup-python@v5
+         with:
+@@ -319,14 +358,18 @@ jobs:
+     permissions:
+       contents: write
+     steps:
++      - name: Setup Git
++        uses: frequenz-floss/gh-action-setup-git@v0.x.x
++        # TODO(cookiecutter): Uncomment this for projects with private dependencies
++        # with:
++        #   username: ${{ secrets.GIT_USER }}
++        #   password: ${{ secrets.GIT_PASS }}
++
+       - name: Fetch sources
+         uses: actions/checkout@v4
+         with:
+           submodules: true
+ 
+-      - name: Setup Git user and e-mail
+-        uses: frequenz-floss/setup-git-user@v2
+-
+       - name: Set up Python
+         uses: actions/setup-python@v5
+         with:
+EOF
+manual_step "Please make sure to remove or uncomment the options to the 'gh-action-setup-git' action in the '.github/workflows/ci.yaml'"
+grep -n "TODO(cookiecutter)" -- .github/workflows/ci.yaml .github/containers/test-installation/Dockerfile
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"
