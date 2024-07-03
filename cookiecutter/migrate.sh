@@ -241,5 +241,10 @@ EOF
 manual_step "Please make sure to remove or uncomment the options to the 'gh-action-setup-git' action in the '.github/workflows/ci.yaml'"
 grep -n "TODO(cookiecutter)" -- .github/workflows/ci.yaml .github/containers/test-installation/Dockerfile
 
+echo "========================================================================"
+
+echo "Disabling new pydoclint's check-class-attributes check in "
+sed -i "/^allow-init-docstring/a check-class-attributes = false" pyproject.toml
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"
