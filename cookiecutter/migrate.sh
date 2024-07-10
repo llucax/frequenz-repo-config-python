@@ -246,5 +246,24 @@ echo "========================================================================"
 echo "Disabling new pydoclint's check-class-attributes check in "
 sed -i "/^allow-init-docstring/a check-class-attributes = false" pyproject.toml
 
+echo "========================================================================"
+
+echo "Adding pull-requests read permission to the release-notes-check workflow"
+patch --merge -p1 <<'EOF'
+diff --git a/.github/workflows/release-notes-check.yml b/.github/workflows/release-notes-check.yml
+index 1e35c1a..e97886b 100644
+--- a/.github/workflows/release-notes-check.yml
++++ b/.github/workflows/release-notes-check.yml
+@@ -17,6 +17,8 @@ jobs:
+   check-release-notes:
+     name: Check release notes are updated
+     runs-on: ubuntu-latest
++    permissions:
++      pull-requests: read
+     steps:
+       - name: Check for a release notes update
+         if: github.event_name == 'pull_request'
+EOF
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"
