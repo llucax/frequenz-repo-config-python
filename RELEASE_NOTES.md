@@ -2,11 +2,9 @@
 
 ## Summary
 
-
+This release includes quite a few enhancements and bug fixes for the cookiecutter template, but most importantly a new script for migrating to new templates, generating the templates is no longer needed for upgrading.
 
 ## Upgrading
-
-<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
 
 ### Cookiecutter template
 
@@ -27,10 +25,6 @@
 ## New Features
 
 - A new GitHub ruleset is provided to configure the merge queue, so branch protection rules are not needed anymore.
-
-### Cookiecutter template
-
-<!-- Here new features for cookiecutter specifically -->
 
 ## Enhancements
 
