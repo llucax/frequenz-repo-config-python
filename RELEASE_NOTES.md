@@ -18,7 +18,7 @@
 
 ### Cookiecutter template
 
-<!-- Here new features for cookiecutter specifically -->
+* Group GitHub Actions dependabot updates.
 
 ## Bug Fixes
 
