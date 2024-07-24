@@ -22,9 +22,27 @@ manual_step() {
   echo "\033[0;33m>>> $@\033[0m"
 }
 
-echo "TODO: Describe your migration step here."
+#echo "TODO: Describe your migration step here."
 # Add your migration steps here.
-manual_step "Add any manual instructions for this step here."
+#manual_step "Add any manual instructions for this step here."
+
+echo "dependabot: Group GitHub Actions updates."
+cat <<'EOT' | patch -p1
+--- a/.github/dependabot.yml
++++ b/.github/dependabot.yml
+@@ -39,3 +39,11 @@ updates:
+     labels:
+       - "part:tooling"
+       - "type:tech-debt"
++    groups:
++      compatible:
++        update-types:
++          - "minor"
++          - "patch"
++      artifacts:
++        patterns:
++          - "actions/*-artifact"
+EOT
 
 # Add a separation line like this one after each migration step.
 echo "========================================================================"
