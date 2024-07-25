@@ -70,7 +70,7 @@ dev-flake8 = [
   "flake8 == 7.1.0",
   "flake8-docstrings == 1.7.0",
   "flake8-pyproject == 1.2.3",  # For reading the flake8 config from pyproject.toml
-  "pydoclint == 0.5.3",
+  "pydoclint == 0.5.6",
   "pydocstyle == 6.3.0",
 ]
 dev-formatting = ["black == 24.4.2", "isort == 5.13.2"]
@@ -81,12 +81,12 @@ dev-mkdocs = [
   "mkdocs-gen-files == 0.5.0",
   "mkdocs-literate-nav == 0.6.1",
   "mkdocs-macros-plugin == 1.0.5",
-  "mkdocs-material == 9.5.27",
+  "mkdocs-material == 9.5.30",
   "mkdocstrings[python] == 0.25.1",
   "mkdocstrings-python == 1.10.5",
 ]
 dev-mypy = [
-  "mypy == 1.10.1",
+  "mypy == 1.11.0",
   "types-setuptools >= 67.6.0, < 72",  # Should match the build dependency
   "types-Markdown == 3.6.0.20240316",
   "types-PyYAML == 6.0.12.20240724",
@@ -103,8 +103,8 @@ dev-pylint = [
   "setuptools >= 67.6.0, < 72",                              # Should match the build dependency
 ]
 dev-pytest = [
-  "pytest == 8.2.2",
-  "pylint == 3.2.5",       # We need this to check for the examples
+  "pytest == 8.3.1",
+  "pylint == 3.2.6",       # We need this to check for the examples
   "cookiecutter == 2.6.0", # For checking the cookiecutter scripts
   "jinja2 == 3.1.4",       # For checking the cookiecutter scripts
   "sybil >= 6.1.1, < 7",   # Should be consistent with the extra-lint-examples dependency
