@@ -82,11 +82,11 @@ dev-mkdocs = [
   "mkdocs-literate-nav == 0.6.1",
   "mkdocs-macros-plugin == 1.0.5",
   "mkdocs-material == 9.5.30",
-  "mkdocstrings[python] == 0.25.1",
-  "mkdocstrings-python == 1.10.5",
+  "mkdocstrings[python] == 0.25.2",
+  "mkdocstrings-python == 1.10.7",
 ]
 dev-mypy = [
-  "mypy == 1.11.0",
+  "mypy == 1.11.1",
   "types-setuptools >= 67.6.0, < 72",  # Should match the build dependency
   "types-Markdown == 3.6.0.20240316",
   "types-PyYAML == 6.0.12.20240724",
@@ -103,7 +103,7 @@ dev-pylint = [
   "setuptools >= 67.6.0, < 72",                              # Should match the build dependency
 ]
 dev-pytest = [
-  "pytest == 8.3.1",
+  "pytest == 8.3.2",
   "pylint == 3.2.6",       # We need this to check for the examples
   "cookiecutter == 2.6.0", # For checking the cookiecutter scripts
   "jinja2 == 3.1.4",       # For checking the cookiecutter scripts
