@@ -6,6 +6,15 @@ requires = [
   "setuptools == 70.1.1",
   "setuptools_scm[toml] == 8.1.0",
   "frequenz-repo-config[{{cookiecutter.type}}] == 0.10.0",
+{%- if cookiecutter.type == "api" %}
+  # We need to pin the protobuf, grpcio and  grpcio-tools dependencies to make
+  # sure the code is generated using the minimum supported versions, as older
+  # versions can't work with code that was generated with newer versions.
+  # https://protobuf.dev/support/cross-version-runtime-guarantee/#backwards
+  "protobuf == 5.28.0",
+  "grpcio-tools == 1.66.1",
+  "grpcio == 1.66.1",
+{%- endif %}
 ]
 build-backend = "setuptools.build_meta"
 
@@ -43,8 +52,15 @@ dependencies = [
 ]
 {%- elif cookiecutter.type == "api" %}
 dependencies = [
-  "frequenz-api-common >= 0.5.0, < 0.6.0",
-  "grpcio >= 1.66.1, < 2",
+  "frequenz-api-common >= 0.6.2, < 0.7.0",
+  # We can't widen beyond the current value unless we bump the minimum
+  # requirements too because of protobuf cross-version runtime guarantees:
+  # https://protobuf.dev/support/cross-version-runtime-guarantee/#major
+  "protobuf >= 5.28.0, < 7", # Do not widen beyond 7!
+  # We couldn't find any document with a spec about the cross-version runtime
+  # guarantee for grpcio, so unless we find one in the future, we'll assume
+  # major version jumps are not compatible
+  "grpcio >= 1.66.1, < 2", # Do not widen beyond 2!
 ]
 {%- else %}
 dependencies = [
