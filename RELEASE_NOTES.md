@@ -19,6 +19,9 @@
 ### Cookiecutter template
 
 * Group GitHub Actions dependabot updates.
+* API projects don't include the `google-common-protos` dependency by default.
+* API projects updated the `grpcio` dependency to `1.66.1`.
+* API projects updated the `frequenz-api-common` dependency to `0.6`.
 
 ## Bug Fixes
 

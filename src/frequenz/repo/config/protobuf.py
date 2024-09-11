@@ -27,10 +27,7 @@ class ProtobufConfig:
     proto_glob: str = "*.proto"
     """The glob pattern to use to find the protobuf files."""
 
-    include_paths: Sequence[str] = (
-        "submodules/api-common-protos",
-        "submodules/frequenz-api-common/proto",
-    )
+    include_paths: Sequence[str] = ("submodules/frequenz-api-common/proto",)
     """The paths to add to the include path when compiling the protobuf files."""
 
     py_path: str = "py"
