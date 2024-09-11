@@ -29,7 +29,6 @@ requires-python = ">= 3.11, < 4"
 # TODO(cookiecutter): Remove and add more dependencies if appropriate
 dependencies = [
   "frequenz-api-common >= 0.5.0, < 0.6.0",
-  "googleapis-common-protos >= 1.56.2, < 2",
   "grpcio >= 1.51.1, < 2",
 ]
 dynamic = ["version"]

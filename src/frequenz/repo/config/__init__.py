@@ -340,8 +340,8 @@ proto_path = "proto_files"
 # Glob pattern to use to find the proto files in the proto_path (default: "*.proto")
 proto_glob = "*.prt"  # Default: "*.proto"
 # List of paths to pass to the protoc compiler as include paths (default:
-# ["submodules/api-common-protos", "submodules/frequenz-api-common/proto"])
-include_paths = ["submodules/api-common-protos"]
+# ["submodules/frequenz-api-common/proto"])
+include_paths = ["submodules/frequenz-api-common/proto"]
 # Path where to generate the Python files (default: "py")
 py_path = "generated"
 # Path where to generate the documentation files (default: "protobuf-reference")
@@ -376,23 +376,18 @@ The project structure is assumed to be as described in the *Protobuf configurati
 section plus the following:
 
 - `pytests/`: Directory containing the tests for the Python code.
-- `submodules/api-common-protos`: Directory containing the Git submodule with the
-  `google/api-common-protos` repository.
 - `submodules/frequenz-api-common`: Directory containing the Git submodule with the
   `frequenz-floss/frequenz-api-common` repository.
 
 Normally Frequenz APIs use basic types from
-[`google/api-common-protos`](https://github.com/googleapis/api-common-protos) and
 [`frequenz-floss/frequenz-api-common`](https://github.com/frequenz-floss/frequenz-api-common),
 so you need to make sure the proper submodules are added to your project:
 
 ```sh
 mkdir submodules
-git submodule add https://github.com/googleapis/api-common-protos.git \
-        submodules/api-common-protos
 git submodule add https://github.com/frequenz-floss/frequenz-api-common.git \
         submodules/frequenz-api-common
-git commit -m "Add api-common-protos and frequenz-api-common submodules" submodules
+git commit -m "Add frequenz-api-common submodule" submodules
 ```
 
 Then you need to add this package as a build dependency and a few extra
@@ -435,13 +430,11 @@ testpaths = ["pytests"]
 ```
 
 Finally you need to make sure to include the generated `*.pyi` files in the
-source distribution, as well as the Google api-common-protos files, as it
-is not handled automatically yet
+source distribution, as it is not handled automatically yet
 ([#13](https://github.com/frequenz-floss/frequenz-repo-config-python/issues/13)).
 Make sure to include these lines in the `MANIFEST.in` file:
 
 ```
-recursive-include submodules/api-common-protos/google *.proto
 recursive-include submodules/frequenz-api-common/proto *.proto
 ```
 
