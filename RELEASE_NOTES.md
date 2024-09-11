@@ -20,6 +20,7 @@
 
 * Group GitHub Actions dependabot updates.
 * API projects don't include the `google-common-protos` dependency by default.
+* API projects updated the `grpcio` dependency to `1.66.1`.
 
 ## Bug Fixes
 
