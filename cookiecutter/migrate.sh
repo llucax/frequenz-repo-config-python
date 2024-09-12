@@ -44,5 +44,10 @@ cat <<'EOT' | patch -p1
 +          - "actions/*-artifact"
 EOT
 
+echo "========================================================================"
+
+echo "Fix the labeler configuration example."
+perl -i -pe 's/all-glob-to-all-file/all-globs-to-all-files/g' .github/labeler.yml
+
 # Add a separation line like this one after each migration step.
 echo "========================================================================"
