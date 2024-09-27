@@ -8,9 +8,9 @@ site_author: "Frequenz Energy-as-a-Service GmbH"
 copyright: "Copyright © 2023 Frequenz Energy-as-a-Service GmbH"
 repo_name: "frequenz-test-python"
 repo_url: "https://github.com/frequenz-floss/frequenz-test-python"
-# TODO(cookiecutter): "main" is the GitHub repo default branch, you might want to update it
+# TODO(cookiecutter): "v0.x.x" is the GitHub repo default branch, you might want to update it
 # if the project uses a different default branch.
-edit_uri: "edit/main/docs/"
+edit_uri: "edit/v0.x.x/docs/"
 strict: true  # Treat warnings as errors
 
 # Build directories

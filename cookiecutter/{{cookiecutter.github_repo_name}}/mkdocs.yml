@@ -8,9 +8,9 @@ site_author: "{{cookiecutter.author_name}}"
 copyright: "Copyright © {{copyright_year}} {{cookiecutter.author_name}}"
 repo_name: "{{cookiecutter.github_repo_name}}"
 repo_url: "https://github.com/{{cookiecutter.github_org}}/{{cookiecutter.github_repo_name}}"
-# TODO(cookiecutter): "main" is the GitHub repo default branch, you might want to update it
+# TODO(cookiecutter): "v0.x.x" is the GitHub repo default branch, you might want to update it
 # if the project uses a different default branch.
-edit_uri: "edit/main/docs/"
+edit_uri: "edit/v0.x.x/docs/"
 strict: true  # Treat warnings as errors
 
 # Build directories
