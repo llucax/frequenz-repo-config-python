@@ -29,7 +29,7 @@
 
 ## Bug Fixes
 
-<!-- Here goes notable bug fixes that are worth a special mention or explanation -->
+* Sybil now parses the `__init__.py` file as well. Previously it was disabled due to an upstream bug.
 
 ### Cookiecutter template
 
