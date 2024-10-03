@@ -121,8 +121,8 @@ plugins:
             # See https://mkdocstrings.github.io/python/usage/#import for details
             - https://docs.python.org/3/objects.inv
 {%- if cookiecutter.type in ("actor", "app", "model") %}
-            - https://frequenz-floss.github.io/frequenz-channels-python/v0.16/objects.inv
-            - https://frequenz-floss.github.io/frequenz-sdk-python/v0.25/objects.inv
+            - https://frequenz-floss.github.io/frequenz-channels-python/v1/objects.inv
+            - https://frequenz-floss.github.io/frequenz-sdk-python/v1.0-pre/objects.inv
 {%- elif cookiecutter.type == "api" %}
             - https://frequenz-floss.github.io/frequenz-api-common/v0.6/objects.inv
             - https://grpc.github.io/grpc/python/objects.inv

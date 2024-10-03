@@ -22,6 +22,7 @@
 * API projects don't include the `google-common-protos` dependency by default.
 * API projects updated the `grpcio` dependency to `1.66.1`.
 * API projects updated the `frequenz-api-common` dependency to `0.6`.
+* Update the SDK dependency to `1.0.0rc901`.
 * Change `edit_uri` default branch to v0.x.x in mkdocs.yml.
 
 ## Bug Fixes
