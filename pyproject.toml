@@ -64,7 +64,7 @@ model = []
 extra-lint-examples = [
   "pylint >= 2.17.3, < 4",
   "pytest >= 7.3.0, < 9",
-  "sybil >= 6.1.1, < 7",
+  "sybil >= 6.1.1, < 9",
 ]
 dev-flake8 = [
   "flake8 == 7.1.1",
@@ -107,7 +107,7 @@ dev-pytest = [
   "pylint == 3.3.1",       # We need this to check for the examples
   "cookiecutter == 2.6.0", # For checking the cookiecutter scripts
   "jinja2 == 3.1.4",       # For checking the cookiecutter scripts
-  "sybil >= 6.1.1, < 7",   # Should be consistent with the extra-lint-examples dependency
+  "sybil >= 6.1.1, < 9",   # Should be consistent with the extra-lint-examples dependency
 ]
 dev = [
   "frequenz-repo-config[dev-mkdocs,dev-flake8,dev-formatting,dev-mkdocs,dev-mypy,dev-noxfile,dev-pylint,dev-pytest]",
