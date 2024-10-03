@@ -16,7 +16,7 @@
 ./mkdocs.yml:            # TODO(cookiecutter): You might want to add other external references here
 ./mkdocs.yml:  # TODO(cookiecutter): You might want to change the logo, the file is located in "docs/"
 ./mkdocs.yml:  # TODO(cookiecutter): You probably want to update the social links
-./mkdocs.yml:# TODO(cookiecutter): "main" is the GitHub repo default branch, you might want to update it
+./mkdocs.yml:# TODO(cookiecutter): "v0.x.x" is the GitHub repo default branch, you might want to update it
 ./proto/frequenz/api/test/test.proto:// TODO(cookiecutter): Add a more descriptive package description.
 ./proto/frequenz/api/test/test.proto:// TODO(cookiecutter): Remove this message.
 ./py/frequenz/api/test/__init__.py:TODO(cookiecutter): Add a more descriptive module description.
