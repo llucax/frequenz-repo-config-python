@@ -6,7 +6,7 @@
 
 ## Upgrading
 
-<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
+- The `frequenz.repo.config.github.abort()` function now takes most arguments as keyword-only arguments.
 
 ### Cookiecutter template
 

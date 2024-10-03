@@ -56,6 +56,7 @@ class GitHubActionsFormatter(logging.Formatter):
 
 def abort(  # pylint: disable=too-many-arguments
     message: str,
+    *,
     title: str | None = None,
     file: str | None = None,
     col: int | None = None,
