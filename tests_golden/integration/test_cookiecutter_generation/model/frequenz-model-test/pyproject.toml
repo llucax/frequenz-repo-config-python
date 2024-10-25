@@ -82,7 +82,7 @@ dev-pytest = [
   "pylint == 3.2.5",       # We need this to check for the examples
   "frequenz-repo-config[extra-lint-examples] == 0.10.0",
   "pytest-mock == 3.14.0",
-  "pytest-asyncio == 0.23.7",
+  "pytest-asyncio == 0.24.0",
   "async-solipsism == 0.6",
 ]
 dev = [
