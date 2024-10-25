@@ -24,6 +24,7 @@
 * API projects updated the `frequenz-api-common` dependency to `0.6`.
 * Update the SDK dependency to `1.0.0rc901`.
 * Change `edit_uri` default branch to v0.x.x in mkdocs.yml.
+* Added a new default option `asyncio_default_fixture_loop_scope = "function"` for `pytest-asyncio` as not providing a value is deprecated.
 
 ## Bug Fixes
 
