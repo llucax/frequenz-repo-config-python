@@ -98,10 +98,13 @@ Import the following
   gh-pages]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Disallow removal and force-pushes of gh-pages.json)
 * [Protect released
   tags]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Protect released tags.json)
-* [Protect version
-  branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Protect version branches.json)
 * [Queue PRs for the default
   branch]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Queue PRs for the default branch.json)
+
+##### Python specific rulesets
+
+* [Protect version
+  branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/python/Protect version branches.json)
 
 ### Code security and analysis
 
