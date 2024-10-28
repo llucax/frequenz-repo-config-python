@@ -7,6 +7,7 @@
 ## Upgrading
 
 - The `frequenz.repo.config.github.abort()` function now takes most arguments as keyword-only arguments.
+- The *Queue PRs for v0.x.x* GitHub ruleset was renamed to *Queue PRs for the default branch* and now targets the default branch. It also only have the merge queue restriction, all other restrictions were removed as they are already present in the *Protect version branches* ruleset. You might want to re-import this ruleset to your repositories.
 
 ### Cookiecutter template
 
@@ -14,7 +15,7 @@
 
 ## New Features
 
-<!-- Here goes the main new features and examples or instructions on how to use them -->
+* Added a new GitHub branch ruleset for Rust projects.
 
 ### Cookiecutter template
 

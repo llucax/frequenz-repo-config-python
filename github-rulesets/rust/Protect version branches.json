@@ -1,5 +1,5 @@
 {
-  "name": "Queue PRs for v0.x.x",
+  "name": "Protect version branches",
   "target": "branch",
   "source_type": "Repository",
   "source": "frequenz-floss/frequenz-repo-config-python",
@@ -8,7 +8,8 @@
     "ref_name": {
       "exclude": [],
       "include": [
-        "refs/heads/v0.x.x"
+        "~DEFAULT_BRANCH",
+        "refs/heads/v[0-9]*.[0-9x]*.x"
       ]
     }
   },
@@ -22,10 +23,10 @@
     {
       "type": "pull_request",
       "parameters": {
-        "required_approving_review_count": 1,
-        "dismiss_stale_reviews_on_push": true,
         "require_code_owner_review": true,
         "require_last_push_approval": true,
+        "dismiss_stale_reviews_on_push": true,
+        "required_approving_review_count": 1,
         "required_review_thread_resolution": false
       }
     },
@@ -33,47 +34,24 @@
       "type": "required_status_checks",
       "parameters": {
         "strict_required_status_checks_policy": false,
+        "do_not_enforce_on_create": false,
         "required_status_checks": [
           {
-            "context": "Test with nox",
-            "integration_id": 15368
-          },
-          {
-            "context": "Test documentation website generation",
-            "integration_id": 15368
-          },
-          {
-            "context": "Test package installation in different architectures",
-            "integration_id": 15368
-          },
-          {
-            "context": "Cross-arch tests with nox",
-            "integration_id": 15368
+            "context": "DCO"
           },
           {
             "context": "Check release notes are updated",
             "integration_id": 15368
           },
           {
-            "context": "DCO"
+            "context": "test",
+            "integration_id": 15368
           }
         ]
       }
     },
     {
       "type": "deletion"
-    },
-    {
-      "type": "merge_queue",
-      "parameters": {
-        "merge_method": "Merge commit",
-        "max_entries_to_build": 5,
-        "min_entries_to_merge": 1,
-        "max_entries_to_merge": 5,
-        "min_entries_to_merge_wait_minutes": 5,
-        "grouping_strategy_all_green": true,
-        "check_response_timeout_minutes": 60
-      }
     }
   ],
   "bypass_actors": [
