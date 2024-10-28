@@ -106,6 +106,11 @@ Import the following
 * [Protect version
   branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/python/Protect version branches.json)
 
+##### Rust specific rulesets
+
+* [Protect version
+  branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/rust/Protect version branches.json)
+
 ### Code security and analysis
 
 * Enable *Dependabot version updates* if relevant
