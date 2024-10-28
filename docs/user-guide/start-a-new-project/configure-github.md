@@ -100,8 +100,8 @@ Import the following
   tags]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Protect released tags.json)
 * [Protect version
   branches]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Protect version branches.json)
-* [Queue PRs for
-  v0.x.x]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Queue PRs for v0.x.x.json)
+* [Queue PRs for the default
+  branch]({{config.repo_url}}/blob/{{ref_name}}/github-rulesets/Queue PRs for the default branch.json)
 
 ### Code security and analysis
 
