@@ -27,6 +27,7 @@
 * Change `edit_uri` default branch to v0.x.x in mkdocs.yml.
 * Added a new default option `asyncio_default_fixture_loop_scope = "function"` for `pytest-asyncio` as not providing a value is deprecated.
 * The migration script is now written in Python, so it should be (hopefully) more compatible with different OSes.
+* Disable more `pylint` checks that are also checked by `mypy` to avoid false positives.
 
 ## Bug Fixes
 
