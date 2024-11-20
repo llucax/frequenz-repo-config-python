@@ -3,7 +3,7 @@
 
 [build-system]
 requires = [
-  "setuptools == 70.1.1",
+  "setuptools == 75.5.0",
   "setuptools_scm[toml] == 8.1.0",
   "frequenz-repo-config[{{cookiecutter.type}}] == 0.10.0",
 {%- if cookiecutter.type == "api" %}
@@ -44,11 +44,11 @@ requires-python = ">= 3.11, < 4"
 # TODO(cookiecutter): Remove and add more dependencies if appropriate
 {%- if cookiecutter.type in ("app", "actor", "model") %}
 dependencies = [
-  "typing-extensions == 4.6.1",
+  "typing-extensions == 4.12.2",
   # Make sure to update the version for cross-referencing also in the
   # mkdocs.yml file when changing the version here (look for the config key
   # plugins.mkdocstrings.handlers.python.import)
-  "frequenz-sdk >= 1.0.0rc901, < 1.0.0rc1000",
+  "frequenz-sdk >= 1.0.0rc1300, < 1.0.0rc1400",
 ]
 {%- elif cookiecutter.type == "api" %}
 dependencies = [
@@ -64,7 +64,7 @@ dependencies = [
 ]
 {%- else %}
 dependencies = [
-  "typing-extensions >= 4.5.0, < 5",
+  "typing-extensions >= 4.12.2, < 5",
 ]
 {%- endif %}
 dynamic = ["version"]
@@ -76,23 +76,23 @@ email = "{{cookiecutter.author_email}}"
 # TODO(cookiecutter): Remove and add more optional dependencies if appropriate
 [project.optional-dependencies]
 dev-flake8 = [
-  "flake8 == 7.1.0",
+  "flake8 == 7.1.1",
   "flake8-docstrings == 1.7.0",
   "flake8-pyproject == 1.2.3",  # For reading the flake8 config from pyproject.toml
-  "pydoclint == 0.5.3",
+  "pydoclint == 0.5.9",
   "pydocstyle == 6.3.0",
 ]
-dev-formatting = ["black == 24.4.2", "isort == 5.13.2"]
+dev-formatting = ["black == 24.10.0", "isort == 5.13.2"]
 dev-mkdocs = [
-  "Markdown == 3.6.0",
-  "black == 24.4.2",
-  "mike == 2.1.2",
+  "Markdown == 3.7",
+  "black == 24.10.0",
+  "mike == 2.1.3",
   "mkdocs-gen-files == 0.5.0",
   "mkdocs-literate-nav == 0.6.1",
-  "mkdocs-macros-plugin == 1.0.5",
-  "mkdocs-material == 9.5.27",
-  "mkdocstrings[python] == 0.26.1",
-  "mkdocstrings-python == 1.11.1",
+  "mkdocs-macros-plugin == 1.3.7",
+  "mkdocs-material == 9.5.45",
+  "mkdocstrings[python] == 0.27.0",
+  "mkdocstrings-python == 1.12.2",
   "frequenz-repo-config[{{cookiecutter.type}}] == 0.10.0",
 ]
 dev-mypy = [
@@ -100,12 +100,12 @@ dev-mypy = [
 {%- if cookiecutter.type == "api" %}
   "grpc-stubs == 1.53.0.2",
 {%- endif %}
-  "types-Markdown == 3.6.0.20240316",
+  "types-Markdown == 3.7.0.20240822",
   # For checking the noxfile, docs/ script, and tests
   "{{cookiecutter.pypi_package_name}}[dev-mkdocs,dev-noxfile,dev-pytest]",
 ]
 dev-noxfile = [
-  "nox == 2024.4.15",
+  "nox == 2024.10.9",
   "frequenz-repo-config[{{cookiecutter.type}}] == 0.10.0",
 ]
 dev-pylint = [
@@ -114,8 +114,8 @@ dev-pylint = [
   "{{cookiecutter.pypi_package_name}}[dev-mkdocs,dev-noxfile,dev-pytest]",
 ]
 dev-pytest = [
-  "pytest == 8.2.2",
-  "pylint == 3.2.5",       # We need this to check for the examples
+  "pytest == 8.3.3",
+  "pylint == 3.3.1",       # We need this to check for the examples
   "frequenz-repo-config[extra-lint-examples] == 0.10.0",
 {%- if cookiecutter.type != "api" %}
   "pytest-mock == 3.14.0",

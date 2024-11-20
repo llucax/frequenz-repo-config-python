@@ -23,7 +23,7 @@
 * API projects don't include the `google-common-protos` dependency by default.
 * API projects updated the `grpcio` dependency to `1.66.1`.
 * API projects updated the `frequenz-api-common` dependency to `0.6`.
-* Update the SDK dependency to `1.0.0rc901`.
+* Bump most of the dependencies.
 * Change `edit_uri` default branch to v0.x.x in mkdocs.yml.
 * Added a new default option `asyncio_default_fixture_loop_scope = "function"` for `pytest-asyncio` as not providing a value is deprecated.
 * The migration script is now written in Python, so it should be (hopefully) more compatible with different OSes.
