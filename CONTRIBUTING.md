@@ -187,7 +187,7 @@ These are the steps to create a new release:
 
    ```sh
    cp .github/RELEASE_NOTES.template.md RELEASE_NOTES.md
-   cp .github/cookiecutter-migrate.template.sh cookiecutter/migrate.sh
+   cp .github/cookiecutter-migrate.template.py cookiecutter/migrate.py
    ```
 
    Commit the new release notes and migration script, and create a PR (this step
