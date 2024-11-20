@@ -92,6 +92,42 @@ def replace_file_contents_atomically(  # noqa; DOC501
         raise
 
 
+def add_pylint_checks() -> None:
+    """Add new pylint checks to the project."""
+    pyproject_toml = Path("pyproject.toml")
+    print(
+        f"{pyproject_toml}: Skip some flaky pylint checks that are checked better by mypy."
+    )
+    marker = '  "no-member",\n'
+    pyproject_toml_content = pyproject_toml.read_text(encoding="utf-8")
+    if pyproject_toml_content.find(marker) == -1:
+        manual_step(
+            f"""\
+{pyproject_toml}: We couldn't find the marker {marker!r} in the file.
+Please add the following lines to the file manually in the
+`[tool.pylint.messages_control]` section, under the `disable` key (ideally below other
+checks that are disabled because `mypy` already checks them) if they are missing:
+  "no-name-in-module",
+  "possibly-used-before-assignment",
+"""
+        )
+        return
+
+    replacement = ""
+    if pyproject_toml_content.find("possibly-used-before-assignment") == -1:
+        replacement += '  "possibly-used-before-assignment",\n'
+    if pyproject_toml_content.find("no-name-in-module") == -1:
+        replacement += '  "no-name-in-module",\n'
+
+    if not replacement:
+        print(f"{pyproject_toml}: seems to be already up-to-date.")
+        return
+
+    replace_file_contents_atomically(
+        pyproject_toml, marker, marker + replacement, content=pyproject_toml_content
+    )
+
+
 def main() -> None:
     """Run the migration steps."""
     # Dependabot patch
@@ -127,6 +163,9 @@ def main() -> None:
         labeler_yml, "all-glob-to-all-file", "all-globs-to-all-files"
     )
     print("=" * 72)
+
+    # Add new pylint checks
+    add_pylint_checks()
 
     # Add a separation line like this one after each migration step.
     print("=" * 72)

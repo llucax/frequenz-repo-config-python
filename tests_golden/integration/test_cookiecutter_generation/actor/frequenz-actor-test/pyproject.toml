@@ -137,11 +137,11 @@ disable = [
   # disabled because it conflicts with isort
   "wrong-import-order",
   "ungrouped-imports",
-  # pylint's unsubscriptable check is buggy and is not needed because
-  # it is a type-check, for which we already have mypy.
+  # Checked by mypy (and pylint is very flaky checking these)
   "unsubscriptable-object",
-  # Checked by mypy
   "no-member",
+  "no-name-in-module",
+  "possibly-used-before-assignment",
   # Checked by flake8
   "f-string-without-interpolation",
   "line-too-long",
