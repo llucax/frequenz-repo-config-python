@@ -11,6 +11,7 @@ config.extra_paths.extend(
     [
         "cookiecutter/hooks",
         "cookiecutter/local_extensions.py",
+        "cookiecutter/migrate.py",
     ]
 )
 nox.configure(config)

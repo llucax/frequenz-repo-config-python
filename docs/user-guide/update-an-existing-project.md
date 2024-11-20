@@ -22,8 +22,8 @@ The easiest way to run the migration script is to fetch it from GitHub and run
 it directly.
 
 ```sh
-curl -sSL https://raw.githubusercontent.com/frequenz-floss/frequenz-repo-config-python/{{ ref_name }}/cookiecutter/migrate.sh \
-	| sh
+curl -sSL https://raw.githubusercontent.com/frequenz-floss/frequenz-repo-config-python/{{ ref_name }}/cookiecutter/migrate.py \
+	| python3
 ```
 
 Make sure that the version (`{{ ref_name }}`) matches the
