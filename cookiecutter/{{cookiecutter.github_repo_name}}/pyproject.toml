@@ -42,13 +42,21 @@ classifiers = [
 ]
 requires-python = ">= 3.11, < 4"
 # TODO(cookiecutter): Remove and add more dependencies if appropriate
-{%- if cookiecutter.type in ("app", "actor", "model") %}
+{%- if cookiecutter.type in ("actor", "model") %}
+dependencies = [
+  "typing-extensions >= 4.12.2, < 5",
+  # Make sure to update the version for cross-referencing also in the
+  # mkdocs.yml file when changing the version here (look for the config key
+  # plugins.mkdocstrings.handlers.python.import)
+  "frequenz-sdk >= 1.0.0rc1300, < 1.0.0rc1400",
+]
+{%- elif cookiecutter.type == "app" %}
 dependencies = [
   "typing-extensions == 4.12.2",
   # Make sure to update the version for cross-referencing also in the
   # mkdocs.yml file when changing the version here (look for the config key
   # plugins.mkdocstrings.handlers.python.import)
-  "frequenz-sdk >= 1.0.0rc1300, < 1.0.0rc1400",
+  "frequenz-sdk == 1.0.0rc1300",
 ]
 {%- elif cookiecutter.type == "api" %}
 dependencies = [

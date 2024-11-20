@@ -28,7 +28,7 @@ classifiers = [
 requires-python = ">= 3.11, < 4"
 # TODO(cookiecutter): Remove and add more dependencies if appropriate
 dependencies = [
-  "typing-extensions == 4.12.2",
+  "typing-extensions >= 4.12.2, < 5",
   # Make sure to update the version for cross-referencing also in the
   # mkdocs.yml file when changing the version here (look for the config key
   # plugins.mkdocstrings.handlers.python.import)
