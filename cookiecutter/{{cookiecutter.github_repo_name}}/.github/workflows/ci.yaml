@@ -29,6 +29,9 @@ jobs:
   protolint:
     name: Check proto files with protolint
     runs-on: ubuntu-20.04
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - name: Setup Git

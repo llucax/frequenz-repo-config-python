@@ -30,6 +30,15 @@ updates:
         update-types:
           - "minor"
           - "patch"
+{%- if cookiecutter.type == "api" %}
+      protobuf:
+        patterns:
+          - "protobuf"
+      grpcio:
+        patterns:
+          - "grpcio"
+          - "grpcio-tools"
+{%- endif %}
 
   - package-ecosystem: "github-actions"
     directory: "/"
