@@ -38,10 +38,17 @@ updates:
           - "frequenz-api-common"
 {%- endif %}
           - "frequenz-repo-config*"
+{%- if cookiecutter.type == "api" %}
+          - "grpcio"
+          - "grpcio-tools"
+{%- endif %}
           - "markdown-callouts"
           - "mkdocs-gen-files"
           - "mkdocs-literate-nav"
           - "mkdocstrings*"
+{%- if cookiecutter.type == "api" %}
+          - "protobuf"
+{%- endif %}
           - "pydoclint"
           - "pytest-asyncio"
       # We group repo-config updates as it uses optional dependencies that are
@@ -53,6 +60,15 @@ updates:
       mkdocstrings:
         patterns:
           - "mkdocstrings*"
+{%- if cookiecutter.type == "api" %}
+      # We group grpcio and protobuf updates together, as they need special
+      # handling on the pyproject.toml file because of the protobuf/grpcio
+      # build/runtime cross-version guarantees
+      grpc:
+        patterns:
+          - "grpcio*"
+          - "protobuf"
+{%- endif %}
 
   - package-ecosystem: "github-actions"
     directory: "/"
