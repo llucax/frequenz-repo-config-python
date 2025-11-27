@@ -64,6 +64,7 @@ extra:
 extra_css:
   - _css/style.css
   - _css/mkdocstrings.css
+  - _css/admonitions.css
 
 # Formatting options
 markdown_extensions:

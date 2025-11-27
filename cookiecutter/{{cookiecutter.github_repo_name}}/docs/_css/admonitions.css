@@ -1,0 +1,50 @@
+:root {
+  --md-admonition-icon--added: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M17 13h-4v4h-2v-4H7v-2h4V7h2v4h4m-5-9A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2'/%3e%3c/svg%3e");
+  --md-admonition-icon--changed: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2m3.1 5.07c.14 0 .28.05.4.16l1.27 1.27c.23.22.23.57 0 .78l-1 1-2.05-2.05 1-1c.1-.11.24-.16.38-.16m-1.97 1.74 2.06 2.06-6.06 6.06H7.07v-2.06z'/%3e%3c/svg%3e");
+  --md-admonition-icon--deprecated: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M17 13H7v-2h10m-5-9A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2'/%3e%3c/svg%3e");
+}
+
+.md-typeset .admonition.added,
+.md-typeset details.added {
+  border-color: rgb(43, 155, 70);
+}
+.md-typeset .added > .admonition-title,
+.md-typeset .added > summary {
+  background-color: rgba(43, 155, 70, 0.1);
+}
+.md-typeset .added > .admonition-title::before,
+.md-typeset .added > summary::before {
+  background-color: rgb(43, 155, 70);
+  -webkit-mask-image: var(--md-admonition-icon--added);
+          mask-image: var(--md-admonition-icon--added);
+}
+
+.md-typeset .admonition.changed,
+.md-typeset details.changed {
+  border-color: rgb(237, 108, 2);
+}
+.md-typeset .changed > .admonition-title,
+.md-typeset .changed > summary {
+  background-color: rgba(237, 108, 2, 0.1);
+}
+.md-typeset .changed > .admonition-title::before,
+.md-typeset .changed > summary::before {
+  background-color: rgb(237, 108, 2);
+  -webkit-mask-image: var(--md-admonition-icon--changed);
+          mask-image: var(--md-admonition-icon--changed);
+}
+
+.md-typeset .admonition.deprecated,
+.md-typeset details.deprecated {
+  border-color: rgb(211, 47, 47);
+}
+.md-typeset .deprecated > .admonition-title,
+.md-typeset .deprecated > summary {
+  background-color: rgba(211, 47, 47, 0.1);
+}
+.md-typeset .deprecated > .admonition-title::before,
+.md-typeset .deprecated > summary::before {
+  background-color: rgb(211, 47, 47);
+  -webkit-mask-image: var(--md-admonition-icon--deprecated);
+          mask-image: var(--md-admonition-icon--deprecated);
+}
