@@ -41,4 +41,4 @@ But you might still need to adapt your code:
 
 ### Cookiecutter template
 
-<!-- Here bug fixes for cookiecutter specifically -->
+- Fixed the `paths` option placement in `mkdocs.yml`. The option was incorrectly placed under `plugins.mkdocstrings.handlers` instead of `plugins.mkdocstrings.handlers.python`.
