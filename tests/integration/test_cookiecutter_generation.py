@@ -73,6 +73,12 @@ def test_generation(tmp_path: pathlib.Path, repo_type: config.RepositoryType) ->
     """Test generation of a new repo."""
     cwd = pathlib.Path().cwd()
     repo_path, _ = _generate_repo(repo_type, tmp_path)
+
+    # For API projects, enhance the generated files to test gRPC service generation
+    # and docs generation more thoroughly
+    if repo_type == config.RepositoryType.API:
+        _enhance_api_project_for_testing(repo_path)
+
     _run(repo_path, "python3", "-m", "venv", ".venv")
 
     _update_pyproject_repo_config_dep(
@@ -83,6 +89,42 @@ def test_generation(tmp_path: pathlib.Path, repo_type: config.RepositoryType) ->
     print()
     print(f"Running in shell [{repo_path}]: {cmd}")
     subprocess.run(cmd, shell=True, cwd=repo_path, check=True)
+
+def _enhance_api_project_for_testing(repo_path: pathlib.Path) -> None:
+    """Enhance generated API project to test gRPC service generation and docs.
+
+    The cookiecutter template generates a minimal proto with just a message.
+    This adds a service definition to properly test gRPC stub generation
+    and docs generation.
+
+    Args:
+        repo_path: Path to the generated API project.
+    """
+    # Add a gRPC service to the proto file
+    proto_file = repo_path / "proto" / "frequenz" / "api" / "test" / "test.proto"
+    with open(proto_file, "a", encoding="utf-8") as f:
+        f.write(
+            "\n"
+            "// A simple test service.\n"
+            "service Test {\n"
+            "  // Says hello.\n"
+            "  rpc SayHello(HelloWorld) returns (HelloWorld);\n"
+            "}\n"
+        )
+
+    # Add a test to verify the gRPC service stub was generated
+    test_file = repo_path / "pytests" / "test_test.py"
+    with open(test_file, "a", encoding="utf-8") as f:
+        f.write(
+            "\n"
+            "\n"
+            "def test_grpc_service_stub() -> None:\n"
+            '    """Test that the gRPC service stub was generated."""\n'
+            "    # pylint: disable=import-outside-toplevel\n"
+            "    from frequenz.api.test import test_pb2_grpc\n"
+            "\n"
+            '    assert hasattr(test_pb2_grpc, "TestStub")\n'
+        )
 
 
 def _generate_repo(
