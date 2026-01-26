@@ -90,6 +90,12 @@ def test_generation(tmp_path: pathlib.Path, repo_type: config.RepositoryType) ->
     print(f"Running in shell [{repo_path}]: {cmd}")
     subprocess.run(cmd, shell=True, cwd=repo_path, check=True)
 
+    cmd = ". .venv/bin/activate; pip install .[dev-mkdocs]; mkdocs build"
+    print()
+    print(f"Running in shell [{repo_path}]: {cmd}")
+    subprocess.run(cmd, shell=True, cwd=repo_path, check=True)
+
+
 def _enhance_api_project_for_testing(repo_path: pathlib.Path) -> None:
     """Enhance generated API project to test gRPC service generation and docs.
 
