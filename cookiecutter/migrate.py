@@ -201,6 +201,53 @@ def migrate_to_ubuntu_slim() -> None:
             )
 
 
+def migrate_mkdocstrings_paths() -> None:
+    """Fix mkdocstrings paths option placement in mkdocs.yml.
+
+    The `paths` option was incorrectly placed under `handlers:` instead of
+    under `handlers.python:`. This migration moves it to the correct location.
+    """
+    mkdocs_file = Path("mkdocs.yml")
+    if not mkdocs_file.exists():
+        print("  Skipping mkdocs.yml (file not found)")
+        return
+
+    content = mkdocs_file.read_text(encoding="utf-8")
+
+    import re
+
+    # Move paths before options when it is nested under options.
+    # Old:
+    #   python:
+    #     options:
+    #       paths: ["src"]
+    # New:
+    #   python:
+    #     paths: ["src"]
+    #     options:
+    pattern = r"(^[ \t]*python:\n)([ \t]*)options:\n[ \t]*paths:\s*(\[[^\n]*\])\n"
+    replacement = r"\1\2paths: \3\n\2options:\n"
+    new_content, count = re.subn(pattern, replacement, content, flags=re.MULTILINE)
+    if count > 0:
+        replace_file_contents_atomically(
+            mkdocs_file, content, new_content, content=content
+        )
+        print("  Updated mkdocs.yml: moved paths option under handlers.python")
+        return
+
+    up_to_date_pattern = (
+        r"(^[ \t]*python:\n)([ \t]*)paths:\s*(\[[^\n]*\])\n\2options:\n"
+    )
+    if re.search(up_to_date_pattern, content, flags=re.MULTILINE):
+        print("  Skipping mkdocs.yml (already migrated)")
+        return
+
+    manual_step(
+        "mkdocs.yml does not match expected mkdocstrings layout. "
+        "Please verify the mkdocstrings handlers configuration manually."
+    )
+
+
 def read_project_type() -> str | None:
     """Read the cookiecutter project type from the replay file."""
     replay_path = Path(".cookiecutter-replay.json")
@@ -221,71 +268,6 @@ def read_project_type() -> str | None:
         return None
 
     return project_type
-
-
-def migrate_mkdocstrings_paths() -> None:
-    """Fix mkdocstrings paths option placement in mkdocs.yml.
-
-    The `paths` option was incorrectly placed under `handlers:` instead of
-    under `handlers.python:`. This migration moves it to the correct location.
-    """
-    mkdocs_file = Path("mkdocs.yml")
-    if not mkdocs_file.exists():
-        print("  Skipping mkdocs.yml (file not found)")
-        return
-
-    content = mkdocs_file.read_text(encoding="utf-8")
-
-    # Pattern for the incorrect placement (paths directly under handlers)
-    old_pattern = """      handlers:
-        paths:"""
-
-    new_pattern = """      handlers:
-        python:
-          paths:"""
-
-    if old_pattern in content:
-        # We also need to remove the duplicate "python:" line that would follow
-        # The old format was:
-        #   handlers:
-        #     paths: [...]
-        #     python:
-        #       options:
-        # The new format should be:
-        #   handlers:
-        #     python:
-        #       paths: [...]
-        #       options:
-
-        # First, do the initial replacement
-        new_content = content.replace(old_pattern, new_pattern, 1)
-
-        # Now we need to remove the duplicate "python:" line and fix indentation
-        # Look for the pattern where we now have:
-        #   handlers:
-        #     python:
-        #       paths: [...]
-        #     python:
-        #       options:
-        # And fix it to:
-        #   handlers:
-        #     python:
-        #       paths: [...]
-        #       options:
-
-        import re
-
-        # Remove the duplicate "python:" line that follows the paths line
-        # Match: paths line, then "        python:\n", and keep the rest
-        pattern = r"(          paths: \[.*\]\n)        python:\n"
-        new_content = re.sub(pattern, r"\1", new_content)
-
-        replace_file_contents_atomically(
-            mkdocs_file, content, new_content, content=content
-        )
-        print("  Updated mkdocs.yml: moved paths option under handlers.python")
-    else:
-        print("  Skipping mkdocs.yml (already migrated or pattern not found)")
 
 
 def apply_patch(patch_content: str) -> None:
