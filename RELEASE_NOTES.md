@@ -2,7 +2,7 @@
 
 ## Summary
 
-This is a maintenance, template-only, bugfix release.
+This is a maintenance, template-focused release.
 
 ## Upgrading
 
@@ -22,3 +22,5 @@ curl -sSL https://raw.githubusercontent.com/frequenz-floss/frequenz-repo-config-
 - Fixed runners for jobs that require Docker and where wrongly converted to `ubuntu-slim` in v0.15.0, changing them back to `ubuntu-24.04` to avoid Docker-related failures. The template and the migration script were both updated to reflect this change.
 - Updated the repo-config migration workflow template and migration script so existing repositories also add the `merge_group` trigger and skip the job unless the event is `pull_request_target`, allowing the workflow to be used as a required merge-queue check.
 - Added a migration step to remove the copilot review request from the Protect version branch protection rules.  This was also done by v0.15.0 in theory, but the migration step was wrong and didn't update it properly.
+- Updated the cookiecutter CI workflows so base-branch pushes and release tags query prior successful checks for the exact same SHA before rerunning the expensive test matrix. This keeps `merge_group` as the full required validation path, still reruns the full fallback checks when a push bypasses the queue, and still rebuilds release artifacts from tags.
+- Added a migration step for the CI workflows so existing repositories can pick up the same SHA-aware deduplication logic, and updated the PR workflow template to cancel superseded runs with a concurrency group.

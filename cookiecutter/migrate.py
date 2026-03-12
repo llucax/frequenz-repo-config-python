@@ -38,6 +38,9 @@ def main() -> None:
     """Run the migration steps."""
     # Add a separation line like this one after each migration step.
     print("=" * 72)
+    print("Optimizing CI workflow SHA deduplication...")
+    migrate_ci_sha_deduplication()
+    print("=" * 72)
     print("Fixing repo-config migration merge queue trigger...")
     migrate_repo_config_migration_merge_group_trigger()
     print("=" * 72)
@@ -70,6 +73,367 @@ def main() -> None:
 
     print("\033[0;32m       ✅ Migration script finished successfully ✅\033[0m")
     print()
+
+
+def migrate_ci_sha_deduplication() -> None:
+    """Optimize CI workflows to skip redundant SHA re-validation."""
+    workflows_dir = Path(".github") / "workflows"
+
+    ci_pr_path = workflows_dir / "ci-pr.yaml"
+    if not ci_pr_path.exists():
+        manual_step(
+            "Unable to find .github/workflows/ci-pr.yaml; if this project uses "
+            "the standard PR workflow, add the concurrency group from the latest "
+            "template so superseded PR runs are cancelled."
+        )
+    else:
+        content = ci_pr_path.read_text(encoding="utf-8")
+        old = "on:\n  pull_request:\n\n"
+        new = (
+            "on:\n"
+            "  pull_request:\n"
+            "\n"
+            "concurrency:\n"
+            "  group: test-pr-${{ github.event.pull_request.number || github.ref }}\n"
+            "  cancel-in-progress: true\n"
+            "\n"
+        )
+        if (
+            "concurrency:\n  group: test-pr-${{ github.event.pull_request.number || github.ref }}"
+            in content
+        ):
+            print(
+                "  Skipped .github/workflows/ci-pr.yaml: PR concurrency already configured"
+            )
+        elif old in content:
+            replace_file_contents_atomically(
+                ci_pr_path, old, new, count=1, content=content
+            )
+            print("  Updated .github/workflows/ci-pr.yaml: added PR concurrency")
+        else:
+            manual_step(
+                "Could not find the expected PR workflow trigger block in "
+                ".github/workflows/ci-pr.yaml. Please add the concurrency group "
+                "from the latest template so superseded PR runs are cancelled."
+            )
+
+    ci_path = workflows_dir / "ci.yaml"
+    if not ci_path.exists():
+        manual_step(
+            "Unable to find .github/workflows/ci.yaml; if this project uses the "
+            "standard CI workflow, update it to deduplicate push and tag checks "
+            "based on prior successful runs of the same SHA."
+        )
+        return
+
+    content = ci_path.read_text(encoding="utf-8")
+    updated = content
+    changed = False
+
+    def replace_once(old: str, new: str, description: str) -> None:
+        nonlocal updated, changed
+        if new in updated:
+            return
+        if old in updated:
+            updated = updated.replace(old, new, 1)
+            changed = True
+            return
+        manual_step(
+            f"Could not find the expected pattern for {description} in {ci_path}. "
+            "Please update that section according to the latest template."
+        )
+
+    determine_ci_scope = (
+        "  determine_ci_scope:\n"
+        "    name: Determine CI scope\n"
+        "    runs-on: ubuntu-slim\n"
+        "    permissions:\n"
+        "      actions: read\n"
+        "      contents: read\n"
+        "    outputs:\n"
+        "      has_prior_validation: ${{ steps.scope.outputs.has_prior_validation }}\n"
+        "      run_protolint: ${{ steps.scope.outputs.run_protolint }}\n"
+        "      run_nox: ${{ steps.scope.outputs.run_nox }}\n"
+        "      run_build: ${{ steps.scope.outputs.run_build }}\n"
+        "      run_test_docs: ${{ steps.scope.outputs.run_test_docs }}\n"
+        "    steps:\n"
+        "      - name: Decide which checks this ref still needs\n"
+        "        id: scope\n"
+        "        env:\n"
+        "          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}\n"
+        "          EVENT_NAME: ${{ github.event_name }}\n"
+        "          GH_TOKEN: ${{ github.token }}\n"
+        "          REF_NAME: ${{ github.ref_name }}\n"
+        "          REF_TYPE: ${{ github.ref_type }}\n"
+        "          REPO: ${{ github.repository }}\n"
+        "          SHA: ${{ github.sha }}\n"
+        "        run: |\n"
+        "          set -eu\n"
+        "\n"
+        "          has_prior_validation=false\n"
+        "          run_protolint=true\n"
+        "          run_nox=true\n"
+        "          run_build=true\n"
+        "          run_test_docs=true\n"
+        "\n"
+        '          if [ "$EVENT_NAME" = "push" ]; then\n'
+        "            is_default_branch_push=false\n"
+        "            is_tag_push=false\n"
+        "            run_test_docs=false\n"
+        "\n"
+        '            if [ "$REF_TYPE" = "branch" ] && [ "$REF_NAME" = "$DEFAULT_BRANCH" ]; then\n'
+        "              is_default_branch_push=true\n"
+        "            fi\n"
+        "\n"
+        '            if [ "$REF_TYPE" = "tag" ]; then\n'
+        "              is_tag_push=true\n"
+        "            fi\n"
+        "\n"
+        '            if [ "$is_default_branch_push" = "true" ] || \\\n'
+        '               [ "$is_tag_push" = "true" ]; then\n'
+        "              merge_group_success=false\n"
+        "              if ! merge_group_success=$(gh api \\\n"
+        "                -X GET \\\n"
+        '                "/repos/$REPO/actions/workflows/ci.yaml/runs" \\\n'
+        '                -f head_sha="$SHA" \\\n'
+        "                -f event=merge_group \\\n"
+        "                -f status=success \\\n"
+        "                -f per_page=1 \\\n"
+        "                --jq '.total_count > 0'); then\n"
+        '                echo "Unable to query prior merge_group runs, falling back to full CI" >&2\n'
+        "                merge_group_success=false\n"
+        "              fi\n"
+        "\n"
+        "              default_branch_push_success=false\n"
+        "              if ! default_branch_push_success=$(gh api \\\n"
+        "                -X GET \\\n"
+        '                "/repos/$REPO/actions/workflows/ci.yaml/runs" \\\n'
+        '                -f head_sha="$SHA" \\\n'
+        "                -f event=push \\\n"
+        '                -f branch="$DEFAULT_BRANCH" \\\n'
+        "                -f status=success \\\n"
+        "                -f per_page=1 \\\n"
+        "                --jq '.total_count > 0'); then\n"
+        '                echo "Unable to query prior default-branch push runs, falling back to full CI" >&2\n'
+        "                default_branch_push_success=false\n"
+        "              fi\n"
+        "\n"
+        '              if [ "$merge_group_success" = "true" ] || \\\n'
+        '                 [ "$default_branch_push_success" = "true" ]; then\n'
+        "                has_prior_validation=true\n"
+        "              fi\n"
+        "            fi\n"
+        "\n"
+        '            if [ "$is_default_branch_push" = "true" ] && \\\n'
+        '               [ "$has_prior_validation" = "true" ]; then\n'
+        "              run_protolint=false\n"
+        "              run_nox=false\n"
+        "              run_build=false\n"
+        "              run_test_docs=false\n"
+        '            elif [ "$is_default_branch_push" = "true" ]; then\n'
+        "              run_test_docs=true\n"
+        "            fi\n"
+        "\n"
+        '            if [ "$is_tag_push" = "true" ] && \\\n'
+        '               [ "$has_prior_validation" = "true" ]; then\n'
+        "              run_protolint=false\n"
+        "              run_nox=false\n"
+        "              # Tags affect the setuptools_scm version, so release artifacts\n"
+        "              # must still be built and installation-tested from the tag itself.\n"
+        "              run_build=true\n"
+        "              run_test_docs=false\n"
+        '            elif [ "$is_tag_push" = "true" ]; then\n'
+        "              run_test_docs=true\n"
+        "            fi\n"
+        "          fi\n"
+        "\n"
+        "          {\n"
+        '            echo "has_prior_validation=$has_prior_validation"\n'
+        '            echo "run_protolint=$run_protolint"\n'
+        '            echo "run_nox=$run_nox"\n'
+        '            echo "run_build=$run_build"\n'
+        '            echo "run_test_docs=$run_test_docs"\n'
+        '          } >> "$GITHUB_OUTPUT"\n'
+        "\n"
+    )
+
+    if "  determine_ci_scope:\n" not in updated:
+        marker = "  protolint:\n" if "  protolint:\n" in updated else "  nox:\n"
+        if marker in updated:
+            updated = updated.replace(marker, determine_ci_scope + marker, 1)
+            changed = True
+        else:
+            manual_step(
+                "Could not find the expected CI job markers in .github/workflows/ci.yaml. "
+                "Please add the `determine_ci_scope` job from the latest template."
+            )
+
+    replace_once(
+        "      # Ignore pushes to merge queues.\n"
+        "      # We only want to test the merge commit (`merge_group` event), the hashes\n"
+        "      # in the push were already tested by the PR checks\n",
+        "      # Ignore pushes to merge queues.\n"
+        "      # These refs are validated through the `merge_group` event, so the push\n"
+        "      # workflow only needs to reason about the resulting base-branch or tag\n"
+        "      # ref.\n",
+        "the push trigger comments",
+    )
+
+    if "  protolint:\n" in updated:
+        replace_once(
+            "  protolint:\n    name: Check proto files with protolint\n",
+            "  protolint:\n"
+            "    name: Check proto files with protolint\n"
+            '    needs: ["determine_ci_scope"]\n'
+            "    if: needs.determine_ci_scope.outputs.run_protolint == 'true'\n",
+            "the protolint job gating",
+        )
+
+    replace_once(
+        "  nox:\n    name: Test with nox\n",
+        "  nox:\n"
+        "    name: Test with nox\n"
+        '    needs: ["determine_ci_scope"]\n'
+        "    if: needs.determine_ci_scope.outputs.run_nox == 'true'\n",
+        "the nox job gating",
+    )
+    replace_once(
+        "  build:\n    name: Build distribution packages\n",
+        "  build:\n"
+        "    name: Build distribution packages\n"
+        '    needs: ["determine_ci_scope"]\n'
+        "    if: needs.determine_ci_scope.outputs.run_build == 'true'\n",
+        "the build job gating",
+    )
+    replace_once(
+        '  test-installation:\n    name: Test package installation\n    needs: ["build"]\n',
+        "  test-installation:\n"
+        "    name: Test package installation\n"
+        '    needs: ["determine_ci_scope", "build"]\n'
+        "    if: needs.determine_ci_scope.outputs.run_build == 'true'\n",
+        "the installation test gating",
+    )
+    replace_once(
+        "  test-docs:\n"
+        "    name: Test documentation website generation\n"
+        "    if: github.event_name != 'push'\n",
+        "  test-docs:\n"
+        "    name: Test documentation website generation\n"
+        '    needs: ["determine_ci_scope"]\n'
+        "    if: needs.determine_ci_scope.outputs.run_test_docs == 'true'\n",
+        "the docs test gating",
+    )
+    replace_once(
+        "  publish-docs:\n"
+        "    name: Publish documentation website to GitHub pages\n"
+        '    needs: ["nox-all", "test-installation-all"]\n'
+        "    if: github.event_name == 'push'\n"
+        "    runs-on: ubuntu-24.04\n",
+        "  publish-docs:\n"
+        "    name: Publish documentation website to GitHub pages\n"
+        '    needs: ["determine_ci_scope", "nox-all", "test-installation-all", "test-docs"]\n'
+        "    if: >\n"
+        "      github.event_name == 'push' &&\n"
+        "      always() &&\n"
+        "      needs.determine_ci_scope.result == 'success' &&\n"
+        "      needs['nox-all'].result == 'success' &&\n"
+        "      needs['test-installation-all'].result == 'success' &&\n"
+        "      (needs['test-docs'].result == 'success' || needs['test-docs'].result == 'skipped')\n"
+        "    runs-on: ubuntu-24.04\n",
+        "the docs publish gating",
+    )
+    replace_once(
+        "  # This job runs if all the `nox` matrix jobs ran and succeeded.\n"
+        "  # It is only used to have a single job that we can require in branch\n"
+        "  # protection rules, so we don't have to update the protection rules each time\n"
+        "  # we add or remove a job from the matrix.\n"
+        "  nox-all:\n"
+        "    # The job name should match the name of the `nox` job.\n"
+        "    name: Test with nox\n"
+        '    needs: ["nox"]\n'
+        "    # We skip this job only if nox was also skipped\n"
+        "    if: always() && needs.nox.result != 'skipped'\n"
+        "    runs-on: ubuntu-slim\n"
+        "    env:\n"
+        "      DEPS_RESULT: ${{ needs.nox.result }}\n"
+        "    steps:\n"
+        "      - name: Check matrix job result\n"
+        '        run: test "$DEPS_RESULT" = "success"\n',
+        "  # This job runs if all the `nox` matrix jobs ran and succeeded, or if the\n"
+        "  # workflow intentionally skipped `nox` because this exact SHA was already\n"
+        "  # validated earlier.\n"
+        "  nox-all:\n"
+        "    # The job name should match the name of the `nox` job.\n"
+        "    name: Test with nox\n"
+        '    needs: ["determine_ci_scope", "nox"]\n'
+        "    if: >\n"
+        "      always() &&\n"
+        "      needs.determine_ci_scope.result == 'success' &&\n"
+        "      needs.nox.result != 'failure' &&\n"
+        "      needs.nox.result != 'cancelled'\n"
+        "    runs-on: ubuntu-slim\n"
+        "    steps:\n"
+        "      - name: Check matrix job result\n"
+        "        env:\n"
+        "          RESULT: ${{ needs.nox.result }}\n"
+        '        run: test "$RESULT" = "success" || test "$RESULT" = "skipped"\n',
+        "the nox aggregate job",
+    )
+    replace_once(
+        "  # This job runs if all the `test-installation` matrix jobs ran and succeeded.\n"
+        "  # It is only used to have a single job that we can require in branch\n"
+        "  # protection rules, so we don't have to update the protection rules each time\n"
+        "  # we add or remove a job from the matrix.\n"
+        "  test-installation-all:\n"
+        "    # The job name should match the name of the `test-installation` job.\n"
+        "    name: Test package installation\n"
+        '    needs: ["test-installation"]\n'
+        "    # We skip this job only if test-installation was also skipped\n"
+        "    if: always() && needs.test-installation.result != 'skipped'\n"
+        "    runs-on: ubuntu-slim\n"
+        "    env:\n"
+        "      DEPS_RESULT: ${{ needs.test-installation.result }}\n"
+        "    steps:\n"
+        "      - name: Check matrix job result\n"
+        '        run: test "$DEPS_RESULT" = "success"\n',
+        "  # This job runs if all the `test-installation` matrix jobs ran and succeeded,\n"
+        "  # or if the workflow intentionally skipped them because this exact SHA was\n"
+        "  # already validated earlier.\n"
+        "  test-installation-all:\n"
+        "    # The job name should match the name of the `test-installation` job.\n"
+        "    name: Test package installation\n"
+        '    needs: ["determine_ci_scope", "test-installation"]\n'
+        "    if: >\n"
+        "      always() &&\n"
+        "      needs.determine_ci_scope.result == 'success' &&\n"
+        "      needs['test-installation'].result != 'failure' &&\n"
+        "      needs['test-installation'].result != 'cancelled'\n"
+        "    runs-on: ubuntu-slim\n"
+        "    steps:\n"
+        "      - name: Check matrix job result\n"
+        "        env:\n"
+        "          RESULT: ${{ needs['test-installation'].result }}\n"
+        '        run: test "$RESULT" = "success" || test "$RESULT" = "skipped"\n',
+        "the installation aggregate job",
+    )
+
+    if updated != content:
+        replace_file_atomically(ci_path, updated)
+        print(
+            "  Updated .github/workflows/ci.yaml: deduplicated push and tag SHA checks"
+        )
+    else:
+        checks = [
+            "  determine_ci_scope:\n",
+            '    needs: ["determine_ci_scope", "nox"]\n',
+            '    needs: ["determine_ci_scope", "test-installation"]\n',
+            "    if: needs.determine_ci_scope.outputs.run_test_docs == 'true'\n",
+            "concurrency:\n  group: test-pr-${{ github.event.pull_request.number || github.ref }}",
+        ]
+        if all(check in content for check in checks[:-1]):
+            print(
+                "  Skipped .github/workflows/ci.yaml: SHA deduplication already configured"
+            )
 
 
 def migrate_api_mkdocs_mkdocstrings_paths() -> None:

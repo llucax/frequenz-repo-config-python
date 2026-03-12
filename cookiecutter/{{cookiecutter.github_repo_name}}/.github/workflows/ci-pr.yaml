@@ -4,6 +4,10 @@ name: Test PR
 on:
   pull_request:
 
+concurrency:
+  group: test-pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   # Please make sure this version is included in the `matrix`, as the
   # `matrix` section can't use `env`, so it must be entered manually

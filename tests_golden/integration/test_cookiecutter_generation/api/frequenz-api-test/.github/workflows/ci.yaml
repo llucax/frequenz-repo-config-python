@@ -9,8 +9,9 @@ on:
       - '*'
     branches-ignore:
       # Ignore pushes to merge queues.
-      # We only want to test the merge commit (`merge_group` event), the hashes
-      # in the push were already tested by the PR checks
+      # These refs are validated through the `merge_group` event, so the push
+      # workflow only needs to reason about the resulting base-branch or tag
+      # ref.
       - 'gh-readonly-queue/**'
       - 'dependabot/**'
   workflow_dispatch:
@@ -23,8 +24,121 @@ env:
   # but sadly `env` can't be used either in `runs-on`.
 
 jobs:
+  determine_ci_scope:
+    name: Determine CI scope
+    runs-on: ubuntu-slim
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      has_prior_validation: ${{ steps.scope.outputs.has_prior_validation }}
+      run_protolint: ${{ steps.scope.outputs.run_protolint }}
+      run_nox: ${{ steps.scope.outputs.run_nox }}
+      run_build: ${{ steps.scope.outputs.run_build }}
+      run_test_docs: ${{ steps.scope.outputs.run_test_docs }}
+    steps:
+      - name: Decide which checks this ref still needs
+        id: scope
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          EVENT_NAME: ${{ github.event_name }}
+          GH_TOKEN: ${{ github.token }}
+          REF_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -eu
+
+          has_prior_validation=false
+          run_protolint=true
+          run_nox=true
+          run_build=true
+          run_test_docs=true
+
+          if [ "$EVENT_NAME" = "push" ]; then
+            is_default_branch_push=false
+            is_tag_push=false
+            run_test_docs=false
+
+            if [ "$REF_TYPE" = "branch" ] && [ "$REF_NAME" = "$DEFAULT_BRANCH" ]; then
+              is_default_branch_push=true
+            fi
+
+            if [ "$REF_TYPE" = "tag" ]; then
+              is_tag_push=true
+            fi
+
+            if [ "$is_default_branch_push" = "true" ] || \
+               [ "$is_tag_push" = "true" ]; then
+              merge_group_success=false
+              if ! merge_group_success=$(gh api \
+                -X GET \
+                "/repos/$REPO/actions/workflows/ci.yaml/runs" \
+                -f head_sha="$SHA" \
+                -f event=merge_group \
+                -f status=success \
+                -f per_page=1 \
+                --jq '.total_count > 0'); then
+                echo "Unable to query prior merge_group runs, falling back to full CI" >&2
+                merge_group_success=false
+              fi
+
+              default_branch_push_success=false
+              if ! default_branch_push_success=$(gh api \
+                -X GET \
+                "/repos/$REPO/actions/workflows/ci.yaml/runs" \
+                -f head_sha="$SHA" \
+                -f event=push \
+                -f branch="$DEFAULT_BRANCH" \
+                -f status=success \
+                -f per_page=1 \
+                --jq '.total_count > 0'); then
+                echo "Unable to query prior default-branch push runs, falling back to full CI" >&2
+                default_branch_push_success=false
+              fi
+
+              if [ "$merge_group_success" = "true" ] || \
+                 [ "$default_branch_push_success" = "true" ]; then
+                has_prior_validation=true
+              fi
+            fi
+
+            if [ "$is_default_branch_push" = "true" ] && \
+               [ "$has_prior_validation" = "true" ]; then
+              run_protolint=false
+              run_nox=false
+              run_build=false
+              run_test_docs=false
+            elif [ "$is_default_branch_push" = "true" ]; then
+              run_test_docs=true
+            fi
+
+            if [ "$is_tag_push" = "true" ] && \
+               [ "$has_prior_validation" = "true" ]; then
+              run_protolint=false
+              run_nox=false
+              # Tags affect the setuptools_scm version, so release artifacts
+              # must still be built and installation-tested from the tag itself.
+              run_build=true
+              run_test_docs=false
+            elif [ "$is_tag_push" = "true" ]; then
+              run_test_docs=true
+            fi
+          fi
+
+          {
+            echo "has_prior_validation=$has_prior_validation"
+            echo "run_protolint=$run_protolint"
+            echo "run_nox=$run_nox"
+            echo "run_build=$run_build"
+            echo "run_test_docs=$run_test_docs"
+          } >> "$GITHUB_OUTPUT"
+
   protolint:
     name: Check proto files with protolint
+    needs: ["determine_ci_scope"]
+    if: needs.determine_ci_scope.outputs.run_protolint == 'true'
     runs-on: ubuntu-24.04
 
     steps:
@@ -55,6 +169,8 @@ jobs:
 
   nox:
     name: Test with nox
+    needs: ["determine_ci_scope"]
+    if: needs.determine_ci_scope.outputs.run_nox == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -81,25 +197,29 @@ jobs:
           # git-username: ${{ secrets.GIT_USER }}
           # git-password: ${{ secrets.GIT_PASS }}
 
-  # This job runs if all the `nox` matrix jobs ran and succeeded.
-  # It is only used to have a single job that we can require in branch
-  # protection rules, so we don't have to update the protection rules each time
-  # we add or remove a job from the matrix.
+  # This job runs if all the `nox` matrix jobs ran and succeeded, or if the
+  # workflow intentionally skipped `nox` because this exact SHA was already
+  # validated earlier.
   nox-all:
     # The job name should match the name of the `nox` job.
     name: Test with nox
-    needs: ["nox"]
-    # We skip this job only if nox was also skipped
-    if: always() && needs.nox.result != 'skipped'
+    needs: ["determine_ci_scope", "nox"]
+    if: >
+      always() &&
+      needs.determine_ci_scope.result == 'success' &&
+      needs.nox.result != 'failure' &&
+      needs.nox.result != 'cancelled'
     runs-on: ubuntu-slim
-    env:
-      DEPS_RESULT: ${{ needs.nox.result }}
     steps:
       - name: Check matrix job result
-        run: test "$DEPS_RESULT" = "success"
+        env:
+          RESULT: ${{ needs.nox.result }}
+        run: test "$RESULT" = "success" || test "$RESULT" = "skipped"
 
   build:
     name: Build distribution packages
+    needs: ["determine_ci_scope"]
+    if: needs.determine_ci_scope.outputs.run_build == 'true'
     # Since this is a pure Python package, we only need to build it once. If it
     # had any architecture specific code, we would need to build it for each
     # architecture.
@@ -136,7 +256,8 @@ jobs:
 
   test-installation:
     name: Test package installation
-    needs: ["build"]
+    needs: ["determine_ci_scope", "build"]
+    if: needs.determine_ci_scope.outputs.run_build == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -188,26 +309,29 @@ jobs:
       - name: Print installed packages (debug)
         run: python -m pip freeze
 
-  # This job runs if all the `test-installation` matrix jobs ran and succeeded.
-  # It is only used to have a single job that we can require in branch
-  # protection rules, so we don't have to update the protection rules each time
-  # we add or remove a job from the matrix.
+  # This job runs if all the `test-installation` matrix jobs ran and succeeded,
+  # or if the workflow intentionally skipped them because this exact SHA was
+  # already validated earlier.
   test-installation-all:
     # The job name should match the name of the `test-installation` job.
     name: Test package installation
-    needs: ["test-installation"]
-    # We skip this job only if test-installation was also skipped
-    if: always() && needs.test-installation.result != 'skipped'
+    needs: ["determine_ci_scope", "test-installation"]
+    if: >
+      always() &&
+      needs.determine_ci_scope.result == 'success' &&
+      needs['test-installation'].result != 'failure' &&
+      needs['test-installation'].result != 'cancelled'
     runs-on: ubuntu-slim
-    env:
-      DEPS_RESULT: ${{ needs.test-installation.result }}
     steps:
       - name: Check matrix job result
-        run: test "$DEPS_RESULT" = "success"
+        env:
+          RESULT: ${{ needs['test-installation'].result }}
+        run: test "$RESULT" = "success" || test "$RESULT" = "skipped"
 
   test-docs:
     name: Test documentation website generation
-    if: github.event_name != 'push'
+    needs: ["determine_ci_scope"]
+    if: needs.determine_ci_scope.outputs.run_test_docs == 'true'
     runs-on: ubuntu-24.04
     steps:
       - name: Setup Git
@@ -244,8 +368,14 @@ jobs:
 
   publish-docs:
     name: Publish documentation website to GitHub pages
-    needs: ["nox-all", "test-installation-all"]
-    if: github.event_name == 'push'
+    needs: ["determine_ci_scope", "nox-all", "test-installation-all", "test-docs"]
+    if: >
+      github.event_name == 'push' &&
+      always() &&
+      needs.determine_ci_scope.result == 'success' &&
+      needs['nox-all'].result == 'success' &&
+      needs['test-installation-all'].result == 'success' &&
+      (needs['test-docs'].result == 'success' || needs['test-docs'].result == 'skipped')
     runs-on: ubuntu-24.04
     permissions:
       contents: write
