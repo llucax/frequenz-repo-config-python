@@ -4,6 +4,8 @@ import importlib.util
 from pathlib import Path
 from typing import Protocol, cast
 
+import pytest
+
 # The script is not intended to be imported as a module, so we load it "dynamically"
 # here to test do some unit testing of its internal functions.
 FIXER_PATH = (
@@ -17,7 +19,7 @@ class FixerModule(Protocol):
 
     PYPROJECT: Path
 
-    def main(self, pyproject_path: Path = ...) -> None:
+    def main(self) -> None:
         """Run the fixer script."""
 
     def replace_range(self, text: str, name: str, version: str) -> tuple[str, int]:
@@ -36,3 +38,34 @@ def _load_fixer() -> FixerModule:
 
 
 fixer = _load_fixer()
+
+
+@pytest.mark.parametrize(
+    ("dependency", "version", "original", "expected"),
+    [
+        (
+            "grpcio",
+            "2.0.0",
+            '"grpcio >= 1.72.1, < 2", # Do not widen beyond 2!',
+            '"grpcio >= 2.0.0, < 3", # Do not widen beyond 3!',
+        ),
+        (
+            "protobuf",
+            "7.34.1",
+            '"protobuf >= 6.32.1, < 7", # Do not widen beyond 7!',
+            '"protobuf >= 7.34.1, < 9", # Do not widen beyond 9!',
+        ),
+    ],
+    ids=lambda case: case[0],
+)
+def test_replace_range_uses_dependency_specific_upper_bounds(
+    dependency: str,
+    version: str,
+    original: str,
+    expected: str,
+) -> None:
+    """Use the configured compatibility window for each runtime dependency."""
+    updated, count = fixer.replace_range(original, dependency, version)
+
+    assert count == 1
+    assert updated == expected
