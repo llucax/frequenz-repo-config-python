@@ -182,6 +182,9 @@ arg-type-hints-in-docstring = false
 arg-type-hints-in-signature = true
 allow-init-docstring = true
 check-class-attributes = false
+require-inline-class-var-docs = true
+check-class-attributes = true
+check-style-mismatch = true
 
 [tool.pylint.similarities]
 ignore-comments = ['yes']
